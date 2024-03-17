@@ -1,0 +1,35 @@
+OOP lab project requirements
+
+
+GENERAL PRESENTATION
+
+	Your grade in the OOP lab is awarded based on an individual project, developed during the first 13 weeks of semester 2. The project will be evaluated in three stages, with distinct requirements and deadlines for each.
+	The project consists of developing a C++ application where you can use as much as possible the object-oriented programming paradigm. You will need to define both classes representing the entities managed by your application as well as the methods/functions corresponding to implement the "business logic".
+
+GRADING
+
+	For each stage, you will receive a grade from 1 to 12. Grade 10 is given for correctly implementing all the basic requirements, being able to receive up to two extra points for outstanding implementations or solving additional requirements.
+	The final grade is the average of the grades from each stage. You must have at least grade 5 to pass the lab and be able to participate in the colloquium/exam.
+
+CHOOSING THE THEME
+
+My recommendation is to choose a topic that you are passionate about, that motivates you to work on the project throughout the semester.
+
+EXAMPLES OF HOMEWORK
+• School management (students, grades, subjects, teachers, etc.)
+• Online store (products, buyers, orders, discounts, etc.)
+• Management of a clinic/hospital (doctors, patients, consultations, medicines, etc.)
+• Human resources management (company, employees, teams, salaries, etc.)
+• Video game with text or graphic interface (player, item, monster, level/map etc.)
+• Project management application (project, task, team, team member etc.)
+• Library (book, author, category, loan, etc.)
+• Music player (album, artist, song, playlist, etc.)
+• Zoo (animals, tickets, pet food, etc.)
+• Formula 1 (teams, cars, drivers, rallies, etc.)
+• Cinema (films, actors, viewings, tickets, etc.)
+• Banking application (customers, accounts, transactions, etc.)
+
+	You can choose any other topic you want. Regardless of the chosen theme, you will need to confirm it with me (in person when you come to the lab, or via email/Teams if you cannot come).
+	It would be preferable to choose distinct themes. A maximum of two students can have an identical/similar assignment. In this case, you need to have a different class structure.
+	Tip: After you've chosen your theme and confirmed it, you can get started with your make a "sketch" of the classes you will need, what data and methods they will hold each and what will be the connections between them. You can do this on paper or using application such as Excalidraw.
+	Recommendation: Familiarize yourself with and start using the debugger in your work environment as soon as possible. You will spend 20% of your time actually writing code and over 80% of the time trying to figure out why it doesn't work the way you would expected.

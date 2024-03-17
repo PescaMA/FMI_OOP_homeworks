@@ -1,0 +1,41 @@
+STAGE 1 REQUIREMENTS
+
+
+GENERAL CRITERIA
+	• All implemented classes and functionality must be called/tested (directly or indirectly) from main (don't have unused/inaccessible code in your project). Classes/methods that are not used or not called upon reference anywhere will not be taken into account. Try to define/implement only the elements you need (you won't have time at the colloquium to implement all possible methods).
+	• Try to keep your code clean:
+– Use variable/function/datatype names that make sense to humans (e.g. nr_employees instead of n).
+– Use the automatic formatting provided by your text editor and try to keep a consistent style.
+– Prefer to use multiple small classes/methods rather than one very long class/method.
+
+CODE VERSIONING
+	• Source code must be uploaded to GitHub. You can create a new empty repository or use *this* template.
+	• If your repository is not publicly accessible, you will need to you also give me read access. Instructions on how to add contributors to a repo are found here. You can add me by username
+(Gabriel Majeri) or by e-mail (constantin.majeri@s.unibuc.ro).
+	• Your repository must have a .gitignore file, so you don't accidentally include compiled files / binaries in Git. You can find an example *here* of .gitignore file for C++.
+	• Recommendation: Keep commits short and self-contained. Find it here a set of best practices for Git commits.
+
+DOCUMENTATION (1p)
+	• In the repository on GitHub you must also have a README file, preferably formatted with Markdown, including at least:
+- Project Name
+- Your chosen theme and a short description of your app
+- A list of the features your app currently has respectively (eg: "can read and remember a list of employees", "can calculate the average price of products in stock" etc.)
+	• Recommendation: update this file as you develop the project. yourself it will be much easier to introduce it to other people.
+
+CLASSES
+	• You must respect the principle of encapsulation (you are not allowed with member data public). Methods can be public or private, depending on their role.
+	• You must define at least 3-4 classes, relevant to the chosen theme. These must be compositionally related (eg have a date member of type Address in the Contact class, have an Employee vector in the Company class etc.)
+
+BUILDERS
+	• All classes must have at least one initialization constructor defined (with or without parameters, depending on the specifics of the class).
+	• At least one class must have a fully and correctly defined de constructor copy, operator= and the destructor (where you can for example reset field values in that class).
+
+METHODS
+	• Initialize at least one instance of each of the defined classes, using a read method/function or overriding operator>>. It is preferable to read the data from the file (it's faster for you too). If you choose to read them from the keyboard, save the input data to a text file and take it with copy & pasta from there when you need it.
+	• All classes must have operator overloaded << for display.
+	• Define at least 2 getters and 2 setters for member data (can be for different fields, from different classes).
+	• At least 2 "business logic" methods that make sense for the topic yours (e.g.: calculate the price of a product by applying a discount, return the average salary of employees in the company, etc.)
+
+---BONUS---
+	• Use the const modifier in all situations where it makes sense (e.g. getters, display functions, parameters that do not change, etc.)
+	• Implement "tests" for your code to make sure it works properly. You can use the assert utility function.
