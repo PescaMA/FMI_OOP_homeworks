@@ -2,8 +2,57 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <set>
 #include <vector>
 #include <cassert>
+class Category;
+class AllCategories{
+    static std::map<std::string,Category*> categories;
+public:
+    static bool isNewId(std::string name){
+        return categories.find(name) == categories.end()
+        || categories[name] == NULL
+        || name == "NONE";
+    }
+    static bool exists(Category* category);
+    static bool addCategory(Category* category);
+    static bool removeCategory(Category* category);
+    static Category* findCategory(std::string name)
+    {
+        if(isNewId(name))
+            return NULL;
+        return categories[name];
+    }
+};
+std::map<std::string,Category*> AllCategories::categories;
+
+class Category{
+    const std::string name;
+public:
+    Category():name("NONE"){}
+    Category(std::string name):name(name){
+        AllCategories::addCategory(this);
+    }
+    ~Category(){AllCategories::removeCategory(this);}
+    std::string getName(){return name;}
+};
+bool AllCategories::exists(Category* category){
+    if(category == NULL) return false;
+    if(isNewId(category->getName())) return false;
+    return categories[category->getName()] == category;
+}
+bool AllCategories::addCategory(Category* category){
+    if(!isNewId(category->getName()))
+        return false;
+    categories[category->getName()] = category;
+    return true;
+}
+bool AllCategories::removeCategory(Category* category){
+    if(!exists(category))
+        return false;
+    categories.erase(category->getName());
+    return true;
+}
 
 class Author;
 class AllAuthors{
@@ -47,6 +96,14 @@ public:
     static void removeBook(const long long id);
     static bool addBook(const long long id, Book* newBook);
     static std::string getBookName(const long long id);
+    static std::vector<Book*> getBooksByName(const std::string name){
+        std::vector<Book* > result;
+        if(books_by_name.find(name) == books_by_name.end())
+            return result;
+        for(int i=0; i <books_by_name[name].size(); i++)
+            result.push_back(books_by_id[books_by_name[name][i]]);
+        return result;
+    }
 };
 std::map<long long,Book*>AllBooks::books_by_id;
 std::map<std::string,std::vector<long long> > AllBooks::books_by_name;
@@ -57,8 +114,10 @@ class Book{
     const long long ISBN;
     std::string name;
     std::vector<int> author_ids;
+    std::vector<Category*> categories;
     int publishDate;
     int nr_pages;
+
 
 public:
     const long long getISBN() const {return ISBN;}
@@ -67,16 +126,18 @@ public:
     int getNr_pages() const {return nr_pages;}
 
     Book():ISBN(-1){}
-    Book(std::string name,std::vector<int> const  author_ids, const int publishDate,const int nr_pages):
+    Book(std::string name,std::vector<int> const  author_ids, const std::vector<Category*> categories, const int publishDate,const int nr_pages):
         ISBN(AllBooks::getNextId()),
         name(name),
         author_ids(author_ids),
+        categories(categories),
         publishDate(publishDate),
         nr_pages(nr_pages){AllBooks::addBook(ISBN,this);}
-    Book(const long long ISBN,std::string name,std::vector<int> const  author_ids, const int publishDate,const int nr_pages ):
+    Book(const long long ISBN,std::string name,std::vector<int> const  author_ids,const std::vector<Category*> categories, const int publishDate,const int nr_pages ):
         ISBN(ISBN),
         name(name),
         author_ids(author_ids),
+        categories(categories),
         publishDate(publishDate),
         nr_pages(nr_pages){AllBooks::addBook(ISBN,this);}
     ~Book(){AllBooks::removeBook(ISBN);}
@@ -102,6 +163,8 @@ void AllBooks::removeBook(const long long id){
         currentID != v->end(); currentID++)
         if(*currentID == id){
             v->erase(currentID);break;}
+    if(v->empty())
+        books_by_name.erase(books_by_id[id]->getName());
     books_by_id.erase(id);
 }
 bool AllBooks::addBook(const long long id, Book* newBook){
@@ -183,16 +246,31 @@ class Library{
 
 struct Tester{
     static void testAll(){
+        testCategory();
         testBook();
         testAuthor();
     }
+    static void testCategory(){
+        Category sf("SF"), fn("Fantasy");
+        assert(AllCategories::isNewId("Test") == true);
+        assert(AllCategories::isNewId("SF") == false);
+        {
+            Category sf2("SF");
+
+        }
+        assert(AllCategories::isNewId("SF") == false);
+        assert(AllCategories::findCategory("Fantasy") != NULL);
+    }
     static void testBook(){
+        Category a("SF");
+        std::vector<Category*> sf(1,&a);
+
         std::vector<int> author_ids;
         author_ids.push_back(1);
         author_ids.push_back(2);
         author_ids.push_back(3);
         {
-        Book book1(1234567890, "Book1",author_ids, 1992,121);
+        Book book1(1234567890, "Book1",author_ids, sf, 1992,121);
         assert(AllBooks::addBook(book1.getISBN(),&book1) == false);
         assert(book1.getNr_pages() == 121);
         assert(AllBooks::isNewID(1234567890) == false);
