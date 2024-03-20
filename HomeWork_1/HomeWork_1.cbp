@@ -10,8 +10,9 @@
 				<Option output="bin/Debug/HomeWork_1" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="raylib" />
+				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++98" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>
