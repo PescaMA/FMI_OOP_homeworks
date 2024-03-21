@@ -6,34 +6,33 @@
 #include <set>
 
 class Author{
-    int id;
     std::string name;
-    std::string penName;
+    std::string penName; /// must be unique!
     std::vector<const std::string*> booksNames;
 public:
-    Author(const int& id, const std::string& name, const std::string& penName):
-        id(id),
+    Author(const std::string& name, const std::string& penName):
         name(name),
         penName(penName){}
     bool operator==(const Author& other) const{
-        return this->id == other.id;
-    }
-    bool operator<(const Author& other) const{
-        return this->id < other.id;
+        return this->penName == other.penName;
     }
 
-    const int& getID() const{return id;}
     const std::vector<const std::string*>& getBooksNames() const{return booksNames;}
     const std::string& getName() const {return name;}
     const std::string& getPenName() const {return penName;}
 
     void setName(const std::string& newName){ name = newName; }
     void setPenName(const std::string& newPenName){ penName = newPenName; }
-    /// note: no setter for id as it should not be changed.
 
     void deleteAllBooksNames(){booksNames.clear();}
-    void addBook(const std::string &name){booksNames.push_back(&name);}
-    bool removeBook(std::string name){
+    void addBook(const std::string& name){booksNames.push_back(&name);}
+    bool findBook(const std::string& name) const {
+        for(unsigned int i = 0; i < booksNames.size(); i++)
+        if(*booksNames[i] == name)
+            return true;
+        return false;
+    }
+    bool removeBook(const std::string& name){
         for(unsigned int i = 0; i < booksNames.size(); i++)
         if(*booksNames[i] == name){
             booksNames.erase(booksNames.begin() + i);
@@ -44,7 +43,6 @@ public:
     friend std::ostream& operator<<(std::ostream& out,const Author& myAuthor){
         out << "(Author INFO) Name: "<< myAuthor.name;
         out << "; PenName: " << myAuthor.penName;
-        out << "; Id: " << myAuthor.id;
         out << "; Books in library: ";
         for(unsigned int i = 0; i < myAuthor.booksNames.size(); i++)
             out << "(" << i << ": " << *myAuthor.booksNames[i] << ") ";
@@ -54,10 +52,10 @@ public:
 };
 
 class Book{
-    long long ISBN;
+    long long ISBN; /// must be unique!
     std::string name;
     std::vector<const Author*> authors;
-    std::vector<std::string*> categoriesNames;
+    std::vector<const std::string*> categoriesNames;
     int publishDate;
     int nr_pages;
 
@@ -65,33 +63,44 @@ public:
     const long long& getISBN()   const {return ISBN;}
     const std::string& getName() const {return name;}
     const std::vector<const Author*>& getAuthors() const {return authors;}
-    const std::vector<std::string*>& getCategories() const {return categoriesNames;}
+    const std::vector<const std::string*>& getCategories() const {return categoriesNames;}
     const int& getNr_pages() const {return nr_pages;}
 
     void addAuthor(const Author& newAuthor){
         authors.push_back(&newAuthor);
     }
-    bool removeAuthor(const int id){
+    bool findAuthor(const std::string& penName) const{
         for(unsigned int i = 0 ; i < authors.size() ; i++)
-            if(id == authors[i]->getID()){
+            if(penName == authors[i]->getPenName())
+                return true;
+        return false;
+    }
+    bool removeAuthor(const std::string& penName){
+        for(unsigned int i = 0 ; i < authors.size() ; i++)
+            if(penName == authors[i]->getPenName()){
                 authors.erase(authors.begin() + i);
                 return true;
             }
         return false;
     }
-    void replaceAuthor(const unsigned int& i, Author* &newAuthor){
+    void replaceAuthor(const unsigned int& i, const Author &newAuthor){
         if(i > authors.size())
             return;
-        authors[i] = newAuthor;
+        authors[i] = &newAuthor;
+    }
+    void replaceCategory(const unsigned int& i, const std::string& newCategoryName){
+        if(i > authors.size())
+            return;
+        categoriesNames[i] = &newCategoryName;
     }
     Book(const long long& ISBN, const std::string& name,Author& author,
-         const std::vector<std::string*>& categoriesNames, const int& publishDate,const int& nr_pages ):
+         const std::vector<const std::string*>& categoriesNames, const int& publishDate,const int& nr_pages ):
         ISBN(ISBN), name(name),
         categoriesNames(categoriesNames),
         publishDate(publishDate),nr_pages(nr_pages)
         {authors.push_back(&author);}
     Book(const long long& ISBN, const std::string& name,   const std::vector<const Author*>& authors,
-         const std::vector<std::string*>& categoriesNames, const int& publishDate,const int& nr_pages ):
+         const std::vector<const std::string*>& categoriesNames, const int& publishDate,const int& nr_pages ):
         ISBN(ISBN), name(name),
         authors(authors),
         categoriesNames(categoriesNames),
@@ -128,17 +137,20 @@ public:
     }
 };
 class Category{
-    std::string name;
+    std::string name; /// must be unique!
     std::vector <const Book*> libraryBooks;
 
 public:
     Category(const std::string &name):name(name){}
+    bool operator==(const Category& other) const{
+        return name == other.name;}
     const std::string& getName() const{return name;}
     const std::vector<const Book*>& getBooks() const {return libraryBooks;}
 
     void addBook(const Book& book){
         libraryBooks.push_back(&book);
     }
+    void deleteAllBooks(){libraryBooks.clear();}
     bool removeBook(Book& book){
         for(unsigned int i = 0 ; i < libraryBooks.size() ; i++)
             if(book == *libraryBooks[i]){
@@ -162,20 +174,80 @@ class Library{
     std::string name;
     std::vector<Book> books;
     std::vector<Author> authors;
-    std::set< Category> categories;
+    std::vector<Category> categories;
 
 public:
+    ///getters
     const int& getID(){return ID;}
     const std::string& getName(){return name;}
     const std::vector<Book>& getBooks() const{return books;}
     const std::vector<Author>& getAuthors() const{return authors;}
-    const std::set<Category>& getCategories() const{return categories;}
+    const std::vector<Category>& getCategories() const{return categories;}
 
-    Library(const int& ID,const std::string& name,const std::vector<Book>& books,const std::vector<Author>& authors,const std::set<Category>& categories):
+    int getAuthorIndex(const std::string& penName) const{
+        for(unsigned int i = 0 ; i < authors.size(); i ++)
+            if(authors[i].getPenName() == penName)
+                return i;
+        return -1;
+    }
+    int getBookIndex(const int& ISBN) const{
+        for(unsigned int i = 0 ; i < books.size(); i ++)
+            if(books[i].getISBN() == ISBN)
+                return i;
+        return -1;
+    }
+    std::vector<int> getBooksIndex(const std::string& name) const{
+        std::vector<int> result;
+        for(unsigned int i = 0 ; i < books.size(); i ++)
+            if(books[i].getName() == name)
+                result.push_back(i);
+        return result;
+    }
+    int getCategoryIndex(const std::string& name) const{
+        for(unsigned int i = 0 ; i < categories.size(); i ++)
+            if(categories[i].getName() == name)
+                return i;
+        return -1;
+    }
+
+    std::vector<Book> getBooksByAuthor(Author myAuthor) const{
+        std::vector<Book> result;
+        for(unsigned int i = 0 ; i < books.size(); i ++)
+            if(books[i].findAuthor(myAuthor.getPenName()))
+                result.push_back(books[i]);
+        return result;
+    }
+    std::vector<Author> getAuthorsOfBook(Book book) const{
+        std::vector<Author> result;
+        std::vector<const  Author*> almost = book.getAuthors();
+        for(unsigned int i = 0 ; i < almost.size(); i ++)
+            result.push_back(*almost[i]);
+        return result;
+    }
+    std::vector<Category> getCategoriesOfBook(Book book) const{
+        std::vector<Category> result;
+        std::vector<const std::string*> almost = book.getCategories();
+        for(unsigned int i = 0 ; i < almost.size(); i ++)
+            result.push_back(categories[getCategoryIndex (*almost[i])] );
+        return result;
+    }
+    std::vector<Book> getBooksByCategory(Category category) const{
+        std::vector<Book> result;
+        std::vector<const  Book*> almost = category.getBooks();
+        for(unsigned int i = 0 ; i < almost.size(); i ++)
+            result.push_back(*almost[i]);
+        return result;
+    }
+
+    /// constructors
+    Library(const int& ID,const std::string& name,const std::vector<Book>& books,
+            const std::vector<Author>& authors,const std::vector<Category>& categories):
         ID(ID), name(name), books(books),
         authors(authors), categories(categories){}
     Library(const int& ID,const std::string& name):
         ID(ID), name(name) {}
+
+    /// setters
     int addAuthor(const Author& author){ /// returns index
         unsigned int i;
         for( i = 0; i < authors.size(); i++)
@@ -190,14 +262,35 @@ public:
         for(unsigned int i = 0; i < bookAuthors.size(); i++){
             int insertIndex = addAuthor( *(bookAuthors[i]) );
             authors[insertIndex].addBook(book.getName());
-            Author* newAuthor = &authors[insertIndex];
+            Author newAuthor = authors[insertIndex];
             book.replaceAuthor(i, newAuthor );
+        }
+    }
+    int addCategory(const Category& category){ /// returns index
+        unsigned int i;
+        for( i = 0; i < categories.size(); i++)
+            if(category == categories[i])
+                return i;
+        categories.push_back(category);
+        categories[i].deleteAllBooks();
+        return i;
+    }
+    void addBookCategories(Book& book){ /// also modifies the pointers from book!
+        const std::vector<const std::string*>& catNames = book.getCategories();
+        for(unsigned int i = 0; i < catNames.size(); i++){
+            int insertIndex = addCategory( *(catNames[i]) );
+            categories[insertIndex].addBook(book);
+            Category newCategory = categories[insertIndex];
+            book.replaceCategory(i, newCategory.getName() );
         }
     }
     void addBook(Book book){
         addBookAuthors(book);
+        addBookCategories(book);
         books.push_back(book);
     }
+
+
 
     friend std::ostream& operator<<(std::ostream& out, const Library& library){
         out << "(Library INFO) Name: "<< library.name;
@@ -216,7 +309,7 @@ public:
         }
         out << "The categories frome these books are:\n";
         i = 0;
-        for(std::set<Category>::const_iterator it = library.categories.begin();
+        for(std::vector<Category>::const_iterator it = library.categories.begin();
         it != library.categories.end(); it++){
             out << "\n  " << i << ". " << *it;
             i++;
