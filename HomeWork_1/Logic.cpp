@@ -2,8 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
-#include <map>
-#include <set>
+#include <list>
 
 class Author{
     std::string name;
@@ -41,7 +40,7 @@ public:
         return false;
     }
     friend std::ostream& operator<<(std::ostream& out,const Author& myAuthor){
-        out << "(Author INFO) Name: "<< myAuthor.name;
+        out << "---(AUTHOR INFO)--- Name: "<< myAuthor.name;
         out << "; PenName: " << myAuthor.penName;
         out << "; Books in library: ";
         for(unsigned int i = 0; i < myAuthor.booksNames.size(); i++)
@@ -93,6 +92,7 @@ public:
             return;
         categoriesNames[i] = &newCategoryName;
     }
+    Book():ISBN(0),name(""){}
     Book(const long long& ISBN, const std::string& name,Author& author,
          const std::vector<const std::string*>& categoriesNames, const int& publishDate,const int& nr_pages ):
         ISBN(ISBN), name(name),
@@ -121,7 +121,7 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& out,const Book& book){
-        out << "(BOOK INFO) Title: "<< book.name;
+        out << "---(BOOK INFO)--- Title: "<< book.name;
         out << "; ISBN: " << book.ISBN;
 
         out << "; Authors: ";
@@ -160,7 +160,7 @@ public:
         return false;
     }
     friend std::ostream& operator<<(std::ostream& out, const Category& category){
-        out << "(CATEGORY INFO) Name: "<< category.name;
+        out << "---(CATEGORY INFO)--- Name: "<< category.name;
         out << "; Library books of this category: ";
         for(unsigned int i = 0 ; i < category.libraryBooks.size(); i ++ )
             out << "(" << i+1 << ": " << category.libraryBooks[i]->getName() << ") ";
@@ -172,114 +172,134 @@ public:
 class Library{
     const int ID;
     std::string name;
-    std::vector<Book> books;
-    std::vector<Author> authors;
-    std::vector<Category> categories;
+    std::list<Book> books;
+    std::list<Author> authors;
+    std::list<Category> categories;
 
-    int addAuthor(const Author& author){ /// returns index
-        unsigned int i;
-        for( i = 0; i < authors.size(); i++)
-            if(author == authors[i])
-                return i;
+    Author& addAuthor(const Author& author){ /// returns index
+        for(auto& currentAuthor:authors)
+            if(author == currentAuthor)
+                return currentAuthor;
 
         authors.push_back(author);
-        for(unsigned int i = 0 ; i < books.size(); i ++)
-            std::cout << books[i];
+        authors.back().deleteAllBooksNames();
 
-        authors[i].deleteAllBooksNames();
-
-        return i;
+        return authors.back();
     }
     void addBookAuthors(Book& book){ /// also modifies the pointers from book!
         const std::vector<const Author*>& bookAuthors = book.getAuthors();
-        for(unsigned int i = 0 ; i < books.size(); i ++)
-            std::cout << books[i];
-
-        for(unsigned int i = 0; i < bookAuthors.size(); i++){
-            int insertIndex = addAuthor( *(bookAuthors[i]) );
-            authors[insertIndex].addBook(book.getName());
-            book.replaceAuthor(i, authors[insertIndex] );
+        int i = 0;
+        for(auto& currentBookAuthor:bookAuthors){
+            Author& myAuthor = addAuthor( *(currentBookAuthor) );
+            myAuthor.addBook(book.getName());
+            book.replaceAuthor(i, myAuthor );
+            i++;
         }
-        for(unsigned int i = 0 ; i < books.size(); i ++)
-            std::cout << books[i];
     }
-    int addCategory(const Category& category){ /// returns index
-        unsigned int i;
-        for( i = 0; i < categories.size(); i++)
-            if(category == categories[i])
-                return i;
+    Category& addCategory(const Category& category){ /// returns index
+        for(auto& currentCategory:categories)
+            if(category == currentCategory)
+                return currentCategory;
         categories.push_back(category);
-        categories[i].deleteAllBooks();
+        categories.back().deleteAllBooks();
 
-        return i;
+        return categories.back();
     }
     void addBookCategories(Book& book){ /// also modifies the pointers from book!
         const std::vector<const std::string*>& catNames = book.getCategories();
-        for(unsigned int i = 0; i < catNames.size(); i++){
-            int insertIndex = addCategory( *(catNames[i]) );
-            categories[insertIndex].addBook(book);
-            book.replaceCategory(i, categories[insertIndex].getName() );
+        int i=0;
+        for(auto& currentAuthor:catNames){
+            Category& myCategory = addCategory( *(currentAuthor) );
+            myCategory.addBook(book);
+            book.replaceCategory(i, myCategory.getName() );
+            i++;
         }
 
+    }
+    Author& getAuthorReference(const std::string& penName){
+        for(auto& currentAuthor:authors)
+            if(currentAuthor.getPenName() == penName)
+                return currentAuthor;
+        static Author fake("","");
+        return fake;
+    }
+    Book& getBookReference(const long long& ISBN){
+        for(auto& currentBook:books)
+            if(currentBook.getISBN() == ISBN)
+                return currentBook;
+        static Book fake=Book();
+        return fake;
+    }
+    Category& getCategoryReference(const std::string& name){
+        for(auto &currentCategory:categories)
+            if(currentCategory.getName() == name)
+                return currentCategory;
+        static Category fake("");
+        return fake;
     }
 public:
     ///getters
     const int& getID(){return ID;}
     const std::string& getName(){return name;}
-    const std::vector<Book>& getBooks() const{return books;}
-    const std::vector<Author>& getAuthors() const{return authors;}
-    const std::vector<Category>& getCategories() const{return categories;}
+    const std::list<Book>& getBooks() const{return books;}
+    const std::list<Author>& getAuthors() const{return authors;}
+    const std::list<Category>& getCategories() const{return categories;}
 
-    int getAuthorIndex(const std::string& penName) const{
-        for(unsigned int i = 0 ; i < authors.size(); i ++)
-            if(authors[i].getPenName() == penName)
-                return i;
-        return -1;
+    Author getAuthor(const std::string& penName) const{
+        for(auto& currentAuthor:authors)
+            if(currentAuthor.getPenName() == penName)
+                return currentAuthor;
+        return Author("","");
     }
-    int getBookIndex(const long long& ISBN) const{
-        for(unsigned int i = 0 ; i < books.size(); i ++)
-            if(books[i].getISBN() == ISBN)
-                return i;
-        return -1;
+    const Book getBook(const long long& ISBN) const{
+        for(auto& currentBook:books)
+            if(currentBook.getISBN() == ISBN)
+                return currentBook;
+        return Book();
     }
-    std::vector<int> getBooksIndex(const std::string& name) const{
-        std::vector<int> result;
-        for(unsigned int i = 0 ; i < books.size(); i ++)
-            if(books[i].getName() == name)
-                result.push_back(i);
+    const Category getCategory(const std::string& name) const{
+        for(auto &currentCategory:categories)
+            if(currentCategory.getName() == name)
+                return currentCategory;
+        return Category("");
+    }
+    const std::vector<Book> getBooks(const std::string& name) const{
+        std::vector<Book> result;
+        for(auto& currentBook:books)
+            if(currentBook.getName() == name)
+                result.push_back(currentBook);
         return result;
     }
-    int getCategoryIndex(const std::string& name) const{
-        for(unsigned int i = 0 ; i < categories.size(); i ++)
-            if(categories[i].getName() == name)
-                return i;
-        return -1;
-    }
 
-    std::vector<Book> getBooksByAuthor(Author myAuthor) const{
+
+    std::vector<Book> getBooksByAuthor(const std::string& penName) const{
+        const Author myAuthor = getAuthor(penName);
         std::vector<Book> result;
-        for(unsigned int i = 0 ; i < books.size(); i ++){
+        for(auto& currentBook:books){
                 ///std::cout << myAuthor.getPenName() << ' ' << books[i];
-            if(books[i].findAuthor(myAuthor.getPenName()))
-                result.push_back(books[i]);
+            if(currentBook.findAuthor(myAuthor.getPenName()))
+                result.push_back(currentBook);
         }
         return result;
     }
-    std::vector<Author> getAuthorsOfBook(Book book) const{
+    std::vector<Author> getAuthorsOfBook(const long long& ISBN) const{
+        const Book book = getBook(ISBN);
         std::vector<Author> result;
         std::vector<const  Author*> almost = book.getAuthors();
         for(unsigned int i = 0 ; i < almost.size(); i ++)
             result.push_back(*almost[i]);
         return result;
     }
-    std::vector<Category> getCategoriesOfBook(Book book) const{
+    std::vector<Category> getCategoriesOfBook(const long long& ISBN) const{
+        const Book book = getBook(ISBN);
         std::vector<Category> result;
         std::vector<const std::string*> almost = book.getCategories();
         for(unsigned int i = 0 ; i < almost.size(); i ++)
-            result.push_back(categories[getCategoryIndex (*almost[i])] );
+            result.push_back(getCategory(*almost[i]) );
         return result;
     }
-    std::vector<Book> getBooksByCategory(Category category) const{
+    std::vector<Book> getBooksByCategory(const std::string& name) const{
+        const Category& category = getCategory(name);
         std::vector<Book> result;
         std::vector<const  Book*> almost = category.getBooks();
         for(unsigned int i = 0 ; i < almost.size(); i ++)
@@ -288,8 +308,8 @@ public:
     }
 
     /// constructors
-    Library(const int& ID,const std::string& name,const std::vector<Book>& books,
-            const std::vector<Author>& authors,const std::vector<Category>& categories):
+    Library(const int& ID,const std::string& name,const std::list<Book>& books,
+            const std::list<Author>& authors,const std::list<Category>& categories):
         ID(ID), name(name), books(books),
         authors(authors), categories(categories){}
     Library(const int& ID,const std::string& name):
@@ -299,43 +319,56 @@ public:
         addBookAuthors(book);
         addBookCategories(book);
         books.push_back(book);
-
-
     }
-    void removeBook(const long long& ISBN){
-        Book& book = books[getBookIndex(ISBN)];
-        for(unsigned int i = 0; i< book.getAuthors().size();i ++){
-            int index = getAuthorIndex(book.getAuthors()[i]->getPenName());
-            authors[index].removeBook(book.getName());
+    bool removeAuthor(const std::string penName){
+        Author& author = getAuthorReference(penName);
+        if(author.getName() == "" || !author.getBooksNames().empty())
+            return false;
+        authors.remove(author);
+        return true;
+    }
+    bool removeCategory(const std::string name){
+        Category& category = getCategoryReference(name);
+        if(category.getName() == "" || !category.getBooks().empty())
+            return false;
+        categories.remove(category);
+        return true;
+    }
+    bool removeBook(const long long& ISBN){
+        Book& book = getBookReference(ISBN);
+        if(book.getName() == "")
+            return false;
+        for(auto& currentAuthor:book.getAuthors()){
+            auto& myAuthor = getAuthorReference(currentAuthor->getPenName());
+            myAuthor.removeBook(book.getName());
         }
 
-        for(unsigned int i = 0; i< book.getCategories().size();i ++){
-            int index = getCategoryIndex(*book.getCategories()[i]);
-            categories[index].removeBook(book);
+       for(auto& currentCategory:book.getCategories()){
+            auto& myCategory = getCategoryReference(*currentCategory);
+            myCategory.removeBook(book);
         }
-        books.erase(books.begin() + getBookIndex(ISBN));
+        books.remove(book);
+        return true;
     }
 
     friend std::ostream& operator<<(std::ostream& out, const Library& library){
-        out << "(Library INFO) Name: "<< library.name;
+        out << "---(LIBRARY INFO)--- Name: "<< library.name;
         out << "; ID: " << library.ID;
         out << "\n  Containing the following books:\n";
-        unsigned int i;
-        for(i = 0 ; i < library.books.size(); i ++)
-            out<<"    " << i << ". " << library.books[i];
+        unsigned int i = 0;
+        for(auto& currentBook:library.books)
+            out<<"    " << i+1 << ". " << currentBook;
 
         out << "\n  The authors from these books are:\n";
         i = 0;
-        for(std::vector<Author>::const_iterator it = library.authors.begin();
-        it != library.authors.end(); it++){
-            out  <<"    " << i << ". " << *it;
+        for(auto& currentAuthor:library.authors){
+            out  <<"    " << i+1 << ". " << currentAuthor;
             i++;
         }
         out << "\n  The categories from these books are:\n";
         i = 0;
-        for(std::vector<Category>::const_iterator it = library.categories.begin();
-        it != library.categories.end(); it++){
-            out<<"    " << i << ". " << *it;
+        for(auto& currentCategory:library.categories){
+            out<<"    " << i+1 << ". " << currentCategory;
             i++;
         }
 

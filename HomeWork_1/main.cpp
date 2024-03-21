@@ -70,6 +70,8 @@ struct UnitTest{
         assert(hobbit == hobbit1); // Same ISBNs (equality based on ISBN)
 
         testOut << hobbit;
+
+        testOut << "All Book tests passed successfully!\n\n";
     }
     static void runCategoryTests(){
         Author Tolkien("John Ronald Reuel Tolkien", "J.R.R. Tolkien");
@@ -89,6 +91,8 @@ struct UnitTest{
         assert(fantasy.getBooks().empty());
 
         testOut << fantasy;
+
+        testOut << "All Category tests passed successfully!\n\n";
     }
     static void runLibraryTests(){
         // Create authors
@@ -120,19 +124,22 @@ struct UnitTest{
         assert(library.getBooks().size() == 2);
         assert(library.getAuthors().size() == 2);
         assert(library.getCategories().size() == 2);
-        std:: cout << library.getBooksByAuthor(author1).size() << "\n";
-        assert(library.getBooksByAuthor(author1).size() == 1);
-        assert(library.getBooksByAuthor(author2).size() == 1);
-        assert(library.getBooksByCategory(cat1).size() == 1);
+        assert(library.getBooksByAuthor(author1.getPenName()).size() == 1);
+        assert(library.getBooksByAuthor(author2.getPenName()).size() == 1);
+        assert(library.getBooksByCategory(cat1.getName()).size() == 1);
 
         // Remove a book and check assertions
+        assert(library.removeAuthor("jsmith") == false);
+        assert(library.removeAuthor("j") == false);
         library.removeBook(123456789);
+        assert(library.removeAuthor("jsmith") == true);
+        assert(library.removeCategory("Non-fiction") == false);
         assert(library.getBooks().size() == 1);
-        assert(library.getBooksByAuthor(author1).size() == 0);
-        assert(library.getBooksByCategory(cat1).size() == 0);
+        assert(library.getBooksByAuthor(author1.getPenName()).size() == 0);
+        assert(library.getBooksByCategory(cat1.getName()).size() == 0);
 
         testOut<<library;
-        testOut << "All assertions passed successfully!" << std::endl;
+        testOut << "All library tests passed successfully!" << std::endl;
     }
 };
 std::ofstream UnitTest::testOut("Tests/unit.out");
