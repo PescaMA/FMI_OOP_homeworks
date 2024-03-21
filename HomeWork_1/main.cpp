@@ -8,28 +8,34 @@ struct UnitTest{
         runCategoryTests();
     }
     static void runAuthorTests(){
-        Author Tolkien(1, "John Ronald Reuel Tolkien", "J.R.R. Tolkien");
+         // Creating an author
+        Author tolkien(1, "John Ronald Reuel Tolkien", "J.R.R. Tolkien");
 
-        // Test getters
-        assert(Tolkien.getID() == 1);
-        assert(Tolkien.getName() == "John Ronald Reuel Tolkien");
-        assert(Tolkien.getPenName() == "J.R.R. Tolkien");
-        assert(Tolkien.getBookCount() == 0);
+        // Adding books
+        std::string b1("The Hobbit"),b2("The Lord of the Rings");
+        tolkien.addBook(b1);
+        tolkien.addBook(b2);
 
-        // Test setters
-        Tolkien.setName("New Name");
-        Tolkien.setPenName("New Pen Name");
-        assert(Tolkien.getName() == "New Name");
-        assert(Tolkien.getPenName() == "New Pen Name");
+        // Testing getters
+        assert(tolkien.getName() == "John Ronald Reuel Tolkien");
+        assert(tolkien.getPenName() == "J.R.R. Tolkien");
+        assert(tolkien.getID() == 1);
+        const std::vector<const std::string*>& booksNames = tolkien.getBooksNames();
+        assert(booksNames.size() == 2);
+        assert(*booksNames[0] == "The Hobbit");
+        assert(*booksNames[1] == "The Lord of the Rings");
 
-        // Test addBook and removeBook
-        Tolkien.addBook();
-        Tolkien.addBook();
-        assert(Tolkien.getBookCount() == 2);
-        Tolkien.removeBook();
-        assert(Tolkien.getBookCount() == 1);
+        // Testing removeBook
+        assert(tolkien.removeBook("The Silmarillion") == false); // Book not present
+        assert(tolkien.removeBook("The Hobbit") == true); // Book removed
+        assert(booksNames.size() == 1);
 
-        testOut << Tolkien;
+        // Testing deleteAllBooksNames
+        tolkien.deleteAllBooksNames();
+        assert(tolkien.getBooksNames().empty() == true); // No books after deletion
+
+
+        testOut << tolkien << "All Author tests passed successfully!\n\n";
     }
     static void runBookTests() {
         Author Tolkien(1, "John Ronald Reuel Tolkien", "J.R.R. Tolkien");
@@ -80,12 +86,12 @@ struct UnitTest{
         Category fantasy("Fantasy");
         fantasy.addBook(hobbit);
 
-        testOut << fantasy;
-
         assert(fantasy.getName() == "Fantasy");
         assert(fantasy.removeBook(LoR) == false);
         assert(fantasy.removeBook(hobbit1) == true);
         assert(fantasy.getBooks().empty());
+
+        testOut << fantasy;
     }
 };
 std::ofstream UnitTest::testOut("Tests/unit.out");
