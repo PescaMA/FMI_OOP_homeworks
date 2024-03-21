@@ -105,13 +105,22 @@ public:
         authors(authors),
         categoriesNames(categoriesNames),
         publishDate(publishDate),nr_pages(nr_pages){}
-    Book(const Book& other)
-    : ISBN(other.ISBN),
-      name(other.name),
-      authors(other.authors),
-      categoriesNames(other.categoriesNames),
-      publishDate(other.publishDate),
-      nr_pages(other.nr_pages) {}
+    Book& operator=(const Book& other){
+        /// Guard self assignment
+        if (this == &other)
+            return *this;
+
+        /// Copy all the fields
+        ISBN = other.ISBN;
+        name = other.name;
+        authors = other.authors;
+        categoriesNames = other.categoriesNames;
+        publishDate = other.publishDate;
+        nr_pages = other.nr_pages;
+
+        /// Return this for chained assignment
+        return *this;
+    }
 
       bool operator==(const Book& other) const{
         return this->ISBN == other.ISBN;
@@ -349,6 +358,18 @@ public:
         }
         books.remove(book);
         return true;
+    }
+    ~Library(){
+        /// Unnecessary.the pointers inside the classes are pointers to const so
+        /// they don't need to be manually freed. Default destructor
+        /// would have done the exact same.
+        ID = 0;
+        name = "";
+        books.clear();
+        authors.clear();
+        categories.clear();
+
+        std::cout << "Cleared a full library.";
     }
 
     friend std::ostream& operator<<(std::ostream& out, const Library& library){
