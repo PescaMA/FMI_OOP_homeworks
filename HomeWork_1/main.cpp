@@ -6,6 +6,7 @@ struct UnitTest{
         runAuthorTests();
         runBookTests();
         runCategoryTests();
+        runLibraryTests();
     }
     static void runAuthorTests(){
          // Creating an author
@@ -88,6 +89,50 @@ struct UnitTest{
         assert(fantasy.getBooks().empty());
 
         testOut << fantasy;
+    }
+    static void runLibraryTests(){
+        // Create authors
+        Author author1("John Smith", "jsmith");
+        Author author2("Jane Doe", "jdoe");
+
+        // Create categories
+        std::vector<const std::string*> str1,str2;
+        std::string a = "Fantasy", b = "Non-fiction";
+        str1.push_back(&a);
+        str2.push_back(&b);
+
+        // Create books
+        Book book1(123456789, "Book 1", author1, str1, 2000, 300);
+        Book book2(987654321, "Book 2", author2, str2, 1998, 250);
+
+        // Create library
+        Library library(1, "My Library");
+
+
+        Category cat1(a);
+
+        // Add books to library
+        library.addBook(book1);
+        library.addBook(book2);
+
+
+        // Test assertions
+        assert(library.getBooks().size() == 2);
+        assert(library.getAuthors().size() == 2);
+        assert(library.getCategories().size() == 2);
+        std:: cout << library.getBooksByAuthor(author1).size() << "\n";
+        assert(library.getBooksByAuthor(author1).size() == 1);
+        assert(library.getBooksByAuthor(author2).size() == 1);
+        assert(library.getBooksByCategory(cat1).size() == 1);
+
+        // Remove a book and check assertions
+        library.removeBook(123456789);
+        assert(library.getBooks().size() == 1);
+        assert(library.getBooksByAuthor(author1).size() == 0);
+        assert(library.getBooksByCategory(cat1).size() == 0);
+
+        testOut<<library;
+        testOut << "All assertions passed successfully!" << std::endl;
     }
 };
 std::ofstream UnitTest::testOut("Tests/unit.out");

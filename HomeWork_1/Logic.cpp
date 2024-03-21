@@ -45,7 +45,7 @@ public:
         out << "; PenName: " << myAuthor.penName;
         out << "; Books in library: ";
         for(unsigned int i = 0; i < myAuthor.booksNames.size(); i++)
-            out << "(" << i << ": " << *myAuthor.booksNames[i] << ") ";
+            out << "(" << i+1 << ": " << *myAuthor.booksNames[i] << ") ";
         out << '\n';
         return out;
     }
@@ -176,6 +176,52 @@ class Library{
     std::vector<Author> authors;
     std::vector<Category> categories;
 
+    int addAuthor(const Author& author){ /// returns index
+        unsigned int i;
+        for( i = 0; i < authors.size(); i++)
+            if(author == authors[i])
+                return i;
+
+        authors.push_back(author);
+        for(unsigned int i = 0 ; i < books.size(); i ++)
+            std::cout << books[i];
+
+        authors[i].deleteAllBooksNames();
+
+        return i;
+    }
+    void addBookAuthors(Book& book){ /// also modifies the pointers from book!
+        const std::vector<const Author*>& bookAuthors = book.getAuthors();
+        for(unsigned int i = 0 ; i < books.size(); i ++)
+            std::cout << books[i];
+
+        for(unsigned int i = 0; i < bookAuthors.size(); i++){
+            int insertIndex = addAuthor( *(bookAuthors[i]) );
+            authors[insertIndex].addBook(book.getName());
+            book.replaceAuthor(i, authors[insertIndex] );
+        }
+        for(unsigned int i = 0 ; i < books.size(); i ++)
+            std::cout << books[i];
+    }
+    int addCategory(const Category& category){ /// returns index
+        unsigned int i;
+        for( i = 0; i < categories.size(); i++)
+            if(category == categories[i])
+                return i;
+        categories.push_back(category);
+        categories[i].deleteAllBooks();
+
+        return i;
+    }
+    void addBookCategories(Book& book){ /// also modifies the pointers from book!
+        const std::vector<const std::string*>& catNames = book.getCategories();
+        for(unsigned int i = 0; i < catNames.size(); i++){
+            int insertIndex = addCategory( *(catNames[i]) );
+            categories[insertIndex].addBook(book);
+            book.replaceCategory(i, categories[insertIndex].getName() );
+        }
+
+    }
 public:
     ///getters
     const int& getID(){return ID;}
@@ -190,7 +236,7 @@ public:
                 return i;
         return -1;
     }
-    int getBookIndex(const int& ISBN) const{
+    int getBookIndex(const long long& ISBN) const{
         for(unsigned int i = 0 ; i < books.size(); i ++)
             if(books[i].getISBN() == ISBN)
                 return i;
@@ -212,9 +258,11 @@ public:
 
     std::vector<Book> getBooksByAuthor(Author myAuthor) const{
         std::vector<Book> result;
-        for(unsigned int i = 0 ; i < books.size(); i ++)
+        for(unsigned int i = 0 ; i < books.size(); i ++){
+                ///std::cout << myAuthor.getPenName() << ' ' << books[i];
             if(books[i].findAuthor(myAuthor.getPenName()))
                 result.push_back(books[i]);
+        }
         return result;
     }
     std::vector<Author> getAuthorsOfBook(Book book) const{
@@ -247,71 +295,47 @@ public:
     Library(const int& ID,const std::string& name):
         ID(ID), name(name) {}
 
-    /// setters
-    int addAuthor(const Author& author){ /// returns index
-        unsigned int i;
-        for( i = 0; i < authors.size(); i++)
-            if(author == authors[i])
-                return i;
-        authors.push_back(author);
-        authors[i].deleteAllBooksNames();
-        return i;
-    }
-    void addBookAuthors(Book& book){ /// also modifies the pointers from book!
-        const std::vector<const Author*>& bookAuthors = book.getAuthors();
-        for(unsigned int i = 0; i < bookAuthors.size(); i++){
-            int insertIndex = addAuthor( *(bookAuthors[i]) );
-            authors[insertIndex].addBook(book.getName());
-            Author newAuthor = authors[insertIndex];
-            book.replaceAuthor(i, newAuthor );
-        }
-    }
-    int addCategory(const Category& category){ /// returns index
-        unsigned int i;
-        for( i = 0; i < categories.size(); i++)
-            if(category == categories[i])
-                return i;
-        categories.push_back(category);
-        categories[i].deleteAllBooks();
-        return i;
-    }
-    void addBookCategories(Book& book){ /// also modifies the pointers from book!
-        const std::vector<const std::string*>& catNames = book.getCategories();
-        for(unsigned int i = 0; i < catNames.size(); i++){
-            int insertIndex = addCategory( *(catNames[i]) );
-            categories[insertIndex].addBook(book);
-            Category newCategory = categories[insertIndex];
-            book.replaceCategory(i, newCategory.getName() );
-        }
-    }
     void addBook(Book book){
         addBookAuthors(book);
         addBookCategories(book);
         books.push_back(book);
+
+
     }
+    void removeBook(const long long& ISBN){
+        Book& book = books[getBookIndex(ISBN)];
+        for(unsigned int i = 0; i< book.getAuthors().size();i ++){
+            int index = getAuthorIndex(book.getAuthors()[i]->getPenName());
+            authors[index].removeBook(book.getName());
+        }
 
-
+        for(unsigned int i = 0; i< book.getCategories().size();i ++){
+            int index = getCategoryIndex(*book.getCategories()[i]);
+            categories[index].removeBook(book);
+        }
+        books.erase(books.begin() + getBookIndex(ISBN));
+    }
 
     friend std::ostream& operator<<(std::ostream& out, const Library& library){
         out << "(Library INFO) Name: "<< library.name;
         out << "; ID: " << library.ID;
-        out << "Containing the following books:\n";
+        out << "\n  Containing the following books:\n";
         unsigned int i;
         for(i = 0 ; i < library.books.size(); i ++)
-            out << "\n  " << i << ". " << library.books[i];
+            out<<"    " << i << ". " << library.books[i];
 
-        out << "The authors frome these books are:\n";
+        out << "\n  The authors from these books are:\n";
         i = 0;
         for(std::vector<Author>::const_iterator it = library.authors.begin();
         it != library.authors.end(); it++){
-            out << "\n  " << i << ". " << *it;
+            out  <<"    " << i << ". " << *it;
             i++;
         }
-        out << "The categories frome these books are:\n";
+        out << "\n  The categories from these books are:\n";
         i = 0;
         for(std::vector<Category>::const_iterator it = library.categories.begin();
         it != library.categories.end(); it++){
-            out << "\n  " << i << ". " << *it;
+            out<<"    " << i << ". " << *it;
             i++;
         }
 
