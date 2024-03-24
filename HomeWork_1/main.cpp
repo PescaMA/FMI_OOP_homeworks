@@ -8,11 +8,14 @@ struct UnitTest{
         runAuthorTests();
         runBookTests();
         runCategoryTests();
+        runCustomerTests();
+        runLoanTests();
         runLibraryTests();
     }
     static void runDateTests(){
         // Test case 1: Construct Date object with valid date
         Date date1("2024-03-24");
+        assert((date1 + 8).getDate() == "2024-04-01");
         try {
             Date::parseDate(date1.getDate());
         } catch (const std::exception& e) {
@@ -129,6 +132,55 @@ struct UnitTest{
 
         testOut << "All Category tests passed successfully!\n\n";
     }
+    static void runCustomerTests() {
+    // Creating customers
+    Customer customer1("John Doe", "john@example.com");
+    Customer customer2("Alice Smith", "alice@example.com");
+
+    // Getting customer info
+    assert(customer1.getName() == "John Doe");
+    assert(customer1.getEmail() == "john@example.com");
+
+    // Updating customer info
+    customer1.setName("John Smith");
+    customer1.setEmail("john.smith@example.com");
+    assert(customer1.getName() == "John Smith");
+    assert(customer1.getEmail() == "john.smith@example.com");
+
+    // Testing equality operator
+    assert(customer1 == customer1); // Same customer
+    assert(!(customer1 == customer2)); // Different customers
+
+    testOut << customer1 << customer2;
+    testOut << "All Customer tests passed successfully!\n\n";
+}
+
+static void runLoanTests() {
+    // Creating a loan
+    Date startDate("2024-03-20");
+    Date returnDate("2024-04-19");
+    std::vector<long long> bookISBNs = {9783608987492, 9780544003415};
+    Loan loan(startDate, returnDate, 50, bookISBNs);
+
+    // Getting loan info
+    assert(loan.getBooksISBN() == bookISBNs);
+
+    // Returning books
+    std::vector<long long> returnedBooksISBN = {9783608987492};
+    std::vector<long long> successfullyReturned = loan.returnBooksISBN(returnedBooksISBN);
+    assert(successfullyReturned.size() == 1); // One book returned successfully
+    assert(successfullyReturned[0] == 9783608987492); // Returned book has correct ISBN
+
+    // Getting days overdue
+    Date currentDate("2024-04-22");
+    assert(loan.getDaysOverdue(currentDate) == 3); // Loan is 3 days overdue
+
+    // Getting price overdue
+    assert(loan.getPriceOverdue(currentDate) == 150); // Overdue cost is 150 cents
+
+    testOut << loan << '\n';
+    testOut << "All Loan tests passed successfully!\n\n" ;
+}
     static void runLibraryTests(){
         // Create authors
         Author author1("John Smith", "jsmith");
@@ -141,11 +193,11 @@ struct UnitTest{
         str2.push_back(&b);
 
         // Create books
-        Book book1(123456789, "Book 1", author1, str1, 500, 2000, 300);
+        Book book1(123456789, "Book 1", author1, str1, 500, 2000, 300, 10); /// 10 books. price 5$, released in 2000, 300 pages.
         Book book2(987654321, "Book 2", author2, str2, 300, 1998, 250);
 
         // Create library
-        Library library(1, "My Library");
+        Library library(1, "My Library","email@a.com");
 
 
         Category cat1(a);
@@ -154,8 +206,33 @@ struct UnitTest{
         library.addBook(book1);
         library.addBook(book2);
 
+        // Adding a customer to the library
+        Customer customer("John Doe", "123456789");
+        assert(library.addCustomer(customer) == true); // Adding a new customer
+        assert(library.addCustomer(customer) == false); // Adding the same customer again
 
-        // Test assertions
+        // Loaning books to the customer
+        std::vector<long long> loanedBooksISBN = library.loanBooks(customer, {123456789, 223,987654321});
+        assert(loanedBooksISBN.size() == 2); // Two books loaned successfully
+
+        // Getting customer's loans
+        std::vector<Loan> customerLoans = library.getCustomerLoans(customer);
+        assert(customerLoans.size() == 2); // One loan entry for the customer (and one empty from creation)
+
+        // Returning books
+        std::vector<long long> returnedBooksISBN = {123456789,2324};
+
+        assert(library.getBook(123456789).getStockCount() == 9);
+        assert(library.returnBooks(customer, returnedBooksISBN).size() == 1); // Returning books successfully
+        assert(library.getBook(123456789).getStockCount() == 10);
+
+        assert(library.returnBooks(customer, {book2}).size() == 1); // Returning books successfully
+
+        // Trying to return the same books again
+        assert(library.returnBooks(customer, returnedBooksISBN).size() == 0); // Books already returned
+
+
+        // Test getters
         assert(library.getBooks().size() == 2);
         assert(library.getAuthors().size() == 2);
         assert(library.getCategories().size() == 2);

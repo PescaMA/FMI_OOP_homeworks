@@ -4,6 +4,7 @@
 #include <list>
 #include <unordered_map>
 
+
 /// libraries necessary for date/time
 #include <chrono>
 #include <ctime>
@@ -14,17 +15,26 @@ class Date { /// Copied most the logic (haven't worked with <ctime>/dates before
     std::string date; /// format is "YYYY-MM-DD"
 
   public:
-    Date(std::string myDate) {
+    Date(){}
+    Date(const std::string& myDate) {
         parseDate(myDate); /// gives errors if invalid type
         date = myDate;
     }
     const std::string& getDate() const{ return date;}
-
-    int operator-(const Date& other) {
+    int operator-(const Date& other) const {
         return getDaysDifference(parseDate(date), parseDate(other.date));
     }
+    Date operator+(const int& days) const {
+        auto currentDate = parseDate(date);
+        auto daysToAdd = std::chrono::hours(24 * days);
+        auto newDate = currentDate + daysToAdd;
+        return Date(getDateFromTime(newDate));
+    }
+    friend std::ostream& operator<<(std::ostream& out, const Date& date){
+        return out << date.date;
+    }
 
-// Function to parse a date string into a time_point
+// Function to parse a date string (format "YYYY-MM-DD") into a time_point
     static std::chrono::system_clock::time_point parseDate(const std::string& dateStr) {
         std::tm tm = {}; /// tm structure, which represents a calendar date and time broken down into its components (e.g., year, month, day, etc.)
         std::istringstream ss(dateStr);
@@ -39,13 +49,16 @@ class Date { /// Copied most the logic (haven't worked with <ctime>/dates before
         return std::chrono::system_clock::from_time_t(tt);
     }
 // Function to get the current date as a string. format is "YYYY-MM-DD"
-    static std::string getCurrentDate() {
-        auto now = std::chrono::system_clock::now();
+    static std::string getDateFromTime(const std::chrono::system_clock::time_point& now){
         std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
         std::tm* timeinfo = std::localtime(&currentTime);
         std::ostringstream oss;
         oss << std::put_time(timeinfo, "%Y-%m-%d");
         return oss.str();
+    }
+    static std::string getCurrentDate() {
+        auto now = std::chrono::system_clock::now();
+        return getDateFromTime(now);
     }
 // Function to get the number of days between two dates
     static int getDaysDifference(const std::chrono::system_clock::time_point& t1,
@@ -54,7 +67,6 @@ class Date { /// Copied most the logic (haven't worked with <ctime>/dates before
         return (std::chrono::duration_cast<std::chrono::hours>(diff)).count() / 24; // Return the number of hours
     }
 };
-
 
 class Author{
     std::string name;
@@ -101,7 +113,6 @@ public:
         return out;
     }
 };
-
 class Book{
     long long ISBN; /// must be unique!
     std::string name;
@@ -159,7 +170,6 @@ public:
         return true;
     }
 
-
     void addAuthor(const Author& newAuthor){
         authors.push_back(&newAuthor);
     }
@@ -177,19 +187,16 @@ public:
             }
         return false;
     }
-    void replaceAuthor(const unsigned int& i, const Author &newAuthor){
+    void replaceAuthor(const unsigned int& i, const Author& newAuthor){
         if(i > authors.size())
             return;
         authors[i] = &newAuthor;
     }
-
-
     void replaceCategory(const unsigned int& i, const std::string& newCategoryName){
         if(i > authors.size())
             return;
         categoriesNames[i] = &newCategoryName;
     }
-
     Book& operator=(const Book& other){
         /// Guard self assignment
         if (this == &other)
@@ -199,11 +206,13 @@ public:
         ISBN = other.ISBN;
         name = other.name;
         authors = other.authors;
+        price = other.price;
         categoriesNames = other.categoriesNames;
         publishYear = other.publishYear;
         nr_pages = other.nr_pages;
+        stockCount = other.stockCount;
 
-        /// Return this for chained assignment
+        /// Return self for chained assignment
         return *this;
     }
     friend std::ostream& operator<<(std::ostream& out,const Book& book){
@@ -240,7 +249,7 @@ public:
         libraryBooks.push_back(&book);
     }
     void deleteAllBooks(){libraryBooks.clear();}
-    bool removeBook(Book& book){
+    bool removeBook(const Book& book){
         for(unsigned int i = 0 ; i < libraryBooks.size() ; i++)
             if(book == *libraryBooks[i]){
                 libraryBooks.erase(libraryBooks.begin() + i);
@@ -261,15 +270,16 @@ class Customer{
     std::string name;
     std::string email;
 public:
-    std::string getName() const {return name;}
-    std::string getEmail() const {return email;}
+    const std::string& getName() const {return name;}
+    const std::string& getEmail() const {return email;}
     void setName(const std::string& newName){ name = newName;}
     void setEmail(const std::string& newEmail){email = newEmail;}
 
+    Customer():name(""),email(""){}
     Customer(std::string name, std::string email):
         name(name),email(email){}
 
-    bool operator==(Customer other){
+    bool operator==(const Customer& other) const{
         return name == other.name &&
         email == other.email;
     }
@@ -280,24 +290,81 @@ public:
         return out;
     }
 };
-
+namespace std {
+    template <> struct hash<Customer> { /// make hash work for unordered map
+        size_t operator()(const Customer& k) const noexcept {
+            return hash<string>()(k.getEmail());
+        }
+    };
+}
 class Loan{
-    std::list<int> booksISBN; /// preferred not to store pointers.
-    Customer customer;
+    Date date , returnDate;
+    int costExtraDays = -1;
+    std::vector<long long> booksISBN; /// preferred not to store pointers.
+
+public:
+    Loan():costExtraDays(-1){}
+    Loan( const Date& date, const Date& returnDate,
+         const int& costExtraDays, const std::vector<long long>& booksISBN):
+          date(date), returnDate(returnDate),
+         costExtraDays(costExtraDays), booksISBN(booksISBN){}
+    const std::vector<long long>& getBooksISBN() const{ return booksISBN;}
+
+    std::vector<long long> returnBooksISBN(std::vector<long long> &returnedBooksISBN){ /// modifies books.
+        std::vector<long long> success;
+        for(unsigned int i = 0; i < returnedBooksISBN.size(); i ++)
+            for(unsigned int j = 0; j < booksISBN.size(); j ++)
+                if(booksISBN[j] == returnedBooksISBN[i]){
+                    success.push_back(booksISBN[i]);
+                    booksISBN.erase(booksISBN.begin() + j);
+                    returnedBooksISBN.erase(returnedBooksISBN.begin() + i);
+                    i--;
+                    break;
+            }
+        return success;
+    }
+    int inline getDaysOverdue(const Date& currentDate) const{
+        return (currentDate -returnDate > 0) *
+         (currentDate - returnDate);
+    }
+    int inline getPriceOverdue(const Date& currentDate) const{
+        return getDaysOverdue(currentDate) * costExtraDays * booksISBN.size();
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, const Loan& loan){
+        if(loan.costExtraDays == -1){
+            out << "---(LOAN INFO)--- EMPTY";
+            return out;
+        }
+        out << "---(LOAN INFO)--- From: " << loan.date;
+        out << " to " << loan.returnDate;
+        out << " with " << loan.costExtraDays /100 << "." << loan.costExtraDays%100 << "$ per day overdue.";
+        out << " ISBN contained are: ";
+        int i=1;
+        for(auto isbn:loan.booksISBN){
+            out << "(" << i << ": " << isbn << ") ";
+            i++;
+        }
+        return out;
+    }
 
 };
-
 class Library{
     const int ID;
+    const int MAX_RETURN_TIME = 30; /// in days
+    const int PENALTY_LATE_RETURN = 50; /// 50 cents/day
+
     std::string name;
+    std::string adress;
     /// using lists instead of vectors so pointers don't break.
-    std::list<Customer> customers;
+    std::unordered_map<Customer,std::vector<Loan>> customers; /// loans are "sorted" in chronological order
     std::list<Book> books;
     std::unordered_map<long long, Book*> booksByISBN;
     std::list<Author> authors;
     std::list<Category> categories;
 
-    Author& addAuthor(const Author& author){ /// returns index
+    /// internal functions:
+    Author& addAuthor(const Author& author){
         for(auto& currentAuthor:authors)
             if(author == currentAuthor)
                 return currentAuthor;
@@ -317,7 +384,7 @@ class Library{
             i++;
         }
     }
-    Category& addCategory(const Category& category){ /// returns index
+    Category& addCategory(const Category& category){
         for(auto& currentCategory:categories)
             if(category == currentCategory)
                 return currentCategory;
@@ -358,6 +425,13 @@ class Library{
         return fake;
     }
 public:
+/// constructors:
+    Library(const int& ID,const std::string& name,const std::string& adress, const std::list<Book>& books,
+            const std::list<Author>& authors,const std::list<Category>& categories):
+        ID(ID), name(name), adress(adress), books(books),
+        authors(authors), categories(categories){}
+    Library(const int& ID,const std::string& name, const std::string& adress):
+        ID(ID), name(name), adress(adress) {}
 ///getters:
     const int& getID(){return ID;}
     const std::string& getName(){return name;}
@@ -365,6 +439,67 @@ public:
     const std::list<Author>& getAuthors() const{return authors;}
     const std::list<Category>& getCategories() const{return categories;}
 ///setters/modifiers
+    inline Date getReturnDate(const Date& startDate) const{
+        return startDate + MAX_RETURN_TIME;
+    }
+    std::vector<long long> getBooksISBN(const std::vector<Book>& rBooks) const{
+        std::vector<long long> booksISBN;
+        for(Book book:rBooks)
+            booksISBN.push_back(book.getISBN());
+        return booksISBN;
+    }
+    bool addCustomer(const Customer& customer){
+        if(customers.find(customer) != customers.end())
+            return false;
+        customers[customer]={Loan()};
+        return true;
+    }
+    const std::vector<Loan>& getCustomerLoans(const Customer& customer) const {
+        if(customers.find(customer) == customers.end())
+             throw std::invalid_argument("Customer not found");
+        return customers.at(customer);
+    }
+    bool canLoanBook(const long long ISBN){
+        if(booksByISBN.find(ISBN) == booksByISBN.end())
+            return false;
+        return booksByISBN[ISBN]->getStockCount() > 0;
+    }
+    std::vector<long long> loanBooks(const Customer& customer, const std::vector<Book>& lBooks){
+        std::vector<long long> booksISBN = getBooksISBN(lBooks);
+        return loanBooks(customer,booksISBN);
+    }
+    std::vector<long long> loanBooks(const Customer& customer, const std::vector<long long>& lBooks){
+        std::vector<long long> success;
+        for(unsigned int i=0;i < lBooks.size();i++)
+            if(canLoanBook(lBooks[i])){
+                booksByISBN[lBooks[i]]->removeBooks(1);
+                success.push_back(lBooks[i]);
+
+            }
+        Date time = Date::getCurrentDate();
+        customers[customer].push_back(Loan
+        (time,getReturnDate(time),PENALTY_LATE_RETURN,success));
+        return success;
+    }
+    std::vector<long long> returnBooks(const Customer& customer, const std::vector<Book>& rBooks){
+        std::vector<long long> booksISBN = getBooksISBN(rBooks);
+        return returnBooks(customer,booksISBN);
+    }
+    std::vector<long long> returnBooks(const Customer& customer, std::vector<long long> booksISBN){
+        std::vector<long long> success;
+        if(customers.find(customer) == customers.end())
+            return {};
+        for(Loan& loan:customers[customer]){
+            std::vector<long long> currentLoaned = loan.returnBooksISBN(booksISBN);
+            for(auto isbn:currentLoaned){
+                success.push_back(isbn);
+                Book& book = getBookReference(isbn);
+                book.addBooks(1);
+            }
+        }
+
+        return success;
+    }
     bool addBook(Book book){
         if(booksByISBN.find(book.getISBN()) != booksByISBN.end())
             return false;
@@ -466,14 +601,7 @@ public:
             result.push_back(*almost[i]);
         return result;
     }
-/// constructor & destructor
-    Library(const int& ID,const std::string& name,const std::list<Book>& books,
-            const std::list<Author>& authors,const std::list<Category>& categories):
-        ID(ID), name(name), books(books),
-        authors(authors), categories(categories){}
-    Library(const int& ID,const std::string& name):
-        ID(ID), name(name) {}
-
+/// destructor:
         ~Library(){
         /// Unnecessary.the pointers inside the classes are pointers to const so
         /// they don't need to be manually freed. Default destructor
@@ -485,7 +613,7 @@ public:
 
         std::cout << "Cleared a full library.";
     }
-/// operators
+/// operators:
     friend std::ostream& operator<<(std::ostream& out, const Library& library){
         out << "---(LIBRARY INFO)--- Name: "<< library.name;
         out << "; ID: " << library.ID;
@@ -504,6 +632,26 @@ public:
         i = 0;
         for(auto& currentCategory:library.categories){
             out<<"    " << i+1 << ". " << currentCategory;
+            i++;
+        }
+
+        out << "\n  The categories from these books are:\n";
+        i = 0;
+        for(auto& currentCategory:library.categories){
+            out<<"    " << i+1 << ". " << currentCategory;
+            i++;
+        }
+
+        out << "\n  The customers are:\n";
+        i = 0;
+        for(auto& customerInfo:library.customers){
+            out<<"    " << i+1 << ". " << customerInfo.first << "with the following loans:\n";
+            int j = 0;
+            for(Loan loan:customerInfo.second){
+                out<<"      " << j+1 << ". " << loan << '\n';
+                j++;
+            }
+
             i++;
         }
 
