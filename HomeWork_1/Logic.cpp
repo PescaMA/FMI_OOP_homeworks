@@ -350,9 +350,9 @@ public:
 
 };
 class Library{
-    const int ID;
-    const int MAX_RETURN_TIME = 30; /// in days
-    const int PENALTY_LATE_RETURN = 50; /// 50 cents/day
+    int ID;
+    int MAX_RETURN_TIME = 30; /// in days
+    int PENALTY_LATE_RETURN = 50; /// 50 cents/day
 
     std::string name;
     std::string adress;
@@ -423,6 +423,13 @@ class Library{
                 return currentCategory;
         static Category fake("");
         return fake;
+    }
+    void clearAll(){
+        customers.clear();
+        books.clear();
+        booksByISBN.clear();
+        authors.clear();
+        categories.clear();
     }
 public:
 /// constructors:
@@ -503,9 +510,9 @@ public:
     bool addBook(Book book){
         if(booksByISBN.find(book.getISBN()) != booksByISBN.end())
             return false;
-        addBookAuthors(book);
-        addBookCategories(book);
         books.push_back(book);
+        addBookAuthors(books.back());
+        addBookCategories(books.back());
         booksByISBN[book.getISBN()] = &books.back();
         return true;
     }
@@ -601,19 +608,43 @@ public:
             result.push_back(*almost[i]);
         return result;
     }
+
 /// destructor:
         ~Library(){
         /// Unnecessary.the pointers inside the classes are pointers to const so
         /// they don't need to be manually freed. Default destructor
         /// would have done the exact same.
-        name = "";
-        books.clear();
-        authors.clear();
-        categories.clear();
+        ID = -1;
+        name = adress ="";
+        clearAll();
 
-        std::cout << "Cleared a full library.";
+        std::cout << "Cleared a full library.\n";
     }
 /// operators:
+    Library(const Library& other){
+        Library& self = *this;
+        self = other;
+    }
+    /// actually necessary because of pointers.
+    Library& operator=(const Library& other){
+        /// Guard self assignment
+        if (this == &other)
+            return *this;
+
+        clearAll();
+        /// Copy all the fields
+        ID = other.ID;
+        name = other.name;
+        adress = other.adress;
+        customers = other.customers;
+
+        for(Book book:other.books){
+            addBook(book);
+        }
+
+        /// Return self for chained assignment
+        return *this;
+    }
     friend std::ostream& operator<<(std::ostream& out, const Library& library){
         out << "---(LIBRARY INFO)--- Name: "<< library.name;
         out << "; ID: " << library.ID;
@@ -635,17 +666,10 @@ public:
             i++;
         }
 
-        out << "\n  The categories from these books are:\n";
-        i = 0;
-        for(auto& currentCategory:library.categories){
-            out<<"    " << i+1 << ". " << currentCategory;
-            i++;
-        }
-
         out << "\n  The customers are:\n";
         i = 0;
         for(auto& customerInfo:library.customers){
-            out<<"    " << i+1 << ". " << customerInfo.first << "with the following loans:\n";
+            out<<"    " << i+1 << ". " << customerInfo.first << " with the following loans:\n";
             int j = 0;
             for(Loan loan:customerInfo.second){
                 out<<"      " << j+1 << ". " << loan << '\n';
