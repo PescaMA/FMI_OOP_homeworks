@@ -1,12 +1,47 @@
 #include "Logic.cpp"
+#include <cassert>
 
 struct UnitTest{
     static std::ofstream testOut;
     static void runAllTests(){
+        runDateTests();
         runAuthorTests();
         runBookTests();
         runCategoryTests();
         runLibraryTests();
+    }
+    static void runDateTests(){
+        // Test case 1: Construct Date object with valid date
+        Date date1("2024-03-24");
+        try {
+            Date::parseDate(date1.getDate());
+        } catch (const std::exception& e) {
+            assert("False negative" == false);
+        }
+        try {
+            Date::parseDate(Date::getCurrentDate());
+        } catch (const std::exception& e) {
+            assert("GetCurrentDate invalid format" == false);
+        }
+
+        // Test case 2: Construct Date object with invalid date
+        try {
+            Date::parseDate("2024-12-11asbad");
+            Date date2("InvalidDate");
+        } catch (const std::exception& e) {
+            assert(std::string(e.what()) == "Invalid date string");
+        }
+
+        // Test case 3: Calculate difference between two dates
+        Date date3("2024-03-20");
+        Date date4("2024-04-20");
+        assert(date4 - date3 == 31);
+
+        date3 = Date("2024-04-20");
+        date4 = Date("2024-05-20");
+        assert(date4 - date3 == 30);
+
+        testOut << "All Date tests passed successfully!\n\n";
     }
     static void runAuthorTests(){
          // Creating an author

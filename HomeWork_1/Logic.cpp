@@ -1,8 +1,60 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <cassert>
 #include <list>
+#include <unordered_map>
+
+/// libraries necessary for date/time
+#include <chrono>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+
+class Date { /// Copied most the logic (haven't worked with <ctime>/dates before)
+    std::string date; /// format is "YYYY-MM-DD"
+
+  public:
+    Date(std::string myDate) {
+        parseDate(myDate); /// gives errors if invalid type
+        date = myDate;
+    }
+    const std::string& getDate() const{ return date;}
+
+    int operator-(const Date& other) {
+        return getDaysDifference(parseDate(date), parseDate(other.date));
+    }
+
+// Function to parse a date string into a time_point
+    static std::chrono::system_clock::time_point parseDate(const std::string& dateStr) {
+        std::tm tm = {}; /// tm structure, which represents a calendar date and time broken down into its components (e.g., year, month, day, etc.)
+        std::istringstream ss(dateStr);
+        ss >> std::get_time(&tm, "%Y-%m-%d"); // Checks format is "YYYY-MM-DD"
+        if (ss.fail() || dateStr.size() != 10) {
+            throw std::invalid_argument("Invalid date string");
+        }
+        std::time_t tt = std::mktime(&tm); /// transformms to Unix_epoch time.
+        if (tt == -1) {
+            throw std::runtime_error("Conversion of date string to time failed");
+        }
+        return std::chrono::system_clock::from_time_t(tt);
+    }
+// Function to get the current date as a string. format is "YYYY-MM-DD"
+    static std::string getCurrentDate() {
+        auto now = std::chrono::system_clock::now();
+        std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+        std::tm* timeinfo = std::localtime(&currentTime);
+        std::ostringstream oss;
+        oss << std::put_time(timeinfo, "%Y-%m-%d");
+        return oss.str();
+    }
+// Function to get the number of days between two dates
+    static int getDaysDifference(const std::chrono::system_clock::time_point& t1,
+                                const std::chrono::system_clock::time_point& t2) {
+        auto diff = t1 - t2; // Calculate the difference
+        return (std::chrono::duration_cast<std::chrono::hours>(diff)).count() / 24; // Return the number of hours
+    }
+};
+
 
 class Author{
     std::string name;
@@ -229,12 +281,19 @@ public:
     }
 };
 
+class Loan{
+    std::list<int> booksISBN; /// preferred not to store pointers.
+    Customer customer;
+
+};
+
 class Library{
     const int ID;
     std::string name;
     /// using lists instead of vectors so pointers don't break.
     std::list<Customer> customers;
     std::list<Book> books;
+    std::unordered_map<long long, Book*> booksByISBN;
     std::list<Author> authors;
     std::list<Category> categories;
 
@@ -286,9 +345,8 @@ class Library{
         return fake;
     }
     Book& getBookReference(const long long& ISBN){
-        for(auto& currentBook:books)
-            if(currentBook.getISBN() == ISBN)
-                return currentBook;
+        if(booksByISBN.find(ISBN) != booksByISBN.end())
+            return *booksByISBN[ISBN];
         static Book fake=Book();
         return fake;
     }
@@ -300,24 +358,65 @@ class Library{
         return fake;
     }
 public:
-    ///getters
+///getters:
     const int& getID(){return ID;}
     const std::string& getName(){return name;}
     const std::list<Book>& getBooks() const{return books;}
     const std::list<Author>& getAuthors() const{return authors;}
     const std::list<Category>& getCategories() const{return categories;}
+///setters/modifiers
+    bool addBook(Book book){
+        if(booksByISBN.find(book.getISBN()) != booksByISBN.end())
+            return false;
+        addBookAuthors(book);
+        addBookCategories(book);
+        books.push_back(book);
+        booksByISBN[book.getISBN()] = &books.back();
+        return true;
+    }
+    bool removeBook(const long long& ISBN){
+        Book& book = getBookReference(ISBN);
+        if(book.getName() == "")
+            return false;
+        for(auto& currentAuthor:book.getAuthors()){
+            auto& myAuthor = getAuthorReference(currentAuthor->getPenName());
+            myAuthor.removeBook(book.getName());
+        }
 
-    Author getAuthor(const std::string& penName) const{
+       for(auto& currentCategory:book.getCategories()){
+            auto& myCategory = getCategoryReference(*currentCategory);
+            myCategory.removeBook(book);
+        }
+        books.remove(book);
+        booksByISBN.erase(book.getISBN());
+        return true;
+    }
+    bool removeAuthor(const std::string penName){
+        Author& author = getAuthorReference(penName);
+        if(author.getName() == "" || !author.getBooksNames().empty())
+            return false;
+        authors.remove(author);
+        return true;
+    }
+    bool removeCategory(const std::string name){
+        Category& category = getCategoryReference(name);
+        if(category.getName() == "" || !category.getBooks().empty())
+            return false;
+        categories.remove(category);
+        return true;
+    }
+/// Simple queries:
+    const Author getAuthor(const std::string& penName) const{
         for(auto& currentAuthor:authors)
             if(currentAuthor.getPenName() == penName)
                 return currentAuthor;
         return Author("","");
     }
     const Book getBook(const long long& ISBN) const{
-        for(auto& currentBook:books)
-            if(currentBook.getISBN() == ISBN)
-                return currentBook;
-        return Book();
+        Book result = Book();
+        if(booksByISBN.find(ISBN) != booksByISBN.end())
+            result = *booksByISBN.at(ISBN); /// doesn't work with []. it needs to be const.
+        return result;
     }
     const Category getCategory(const std::string& name) const{
         for(auto &currentCategory:categories)
@@ -332,8 +431,7 @@ public:
                 result.push_back(currentBook);
         return result;
     }
-
-
+/// join queries:
     std::vector<Book> getBooksByAuthor(const std::string& penName) const{
         const Author myAuthor = getAuthor(penName);
         std::vector<Book> result;
@@ -368,8 +466,7 @@ public:
             result.push_back(*almost[i]);
         return result;
     }
-
-    /// constructors
+/// constructor & destructor
     Library(const int& ID,const std::string& name,const std::list<Book>& books,
             const std::list<Author>& authors,const std::list<Category>& categories):
         ID(ID), name(name), books(books),
@@ -377,42 +474,7 @@ public:
     Library(const int& ID,const std::string& name):
         ID(ID), name(name) {}
 
-    void addBook(Book book){
-        addBookAuthors(book);
-        addBookCategories(book);
-        books.push_back(book);
-    }
-    bool removeAuthor(const std::string penName){
-        Author& author = getAuthorReference(penName);
-        if(author.getName() == "" || !author.getBooksNames().empty())
-            return false;
-        authors.remove(author);
-        return true;
-    }
-    bool removeCategory(const std::string name){
-        Category& category = getCategoryReference(name);
-        if(category.getName() == "" || !category.getBooks().empty())
-            return false;
-        categories.remove(category);
-        return true;
-    }
-    bool removeBook(const long long& ISBN){
-        Book& book = getBookReference(ISBN);
-        if(book.getName() == "")
-            return false;
-        for(auto& currentAuthor:book.getAuthors()){
-            auto& myAuthor = getAuthorReference(currentAuthor->getPenName());
-            myAuthor.removeBook(book.getName());
-        }
-
-       for(auto& currentCategory:book.getCategories()){
-            auto& myCategory = getCategoryReference(*currentCategory);
-            myCategory.removeBook(book);
-        }
-        books.remove(book);
-        return true;
-    }
-    ~Library(){
+        ~Library(){
         /// Unnecessary.the pointers inside the classes are pointers to const so
         /// they don't need to be manually freed. Default destructor
         /// would have done the exact same.
@@ -423,7 +485,7 @@ public:
 
         std::cout << "Cleared a full library.";
     }
-
+/// operators
     friend std::ostream& operator<<(std::ostream& out, const Library& library){
         out << "---(LIBRARY INFO)--- Name: "<< library.name;
         out << "; ID: " << library.ID;
