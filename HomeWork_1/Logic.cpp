@@ -55,15 +55,58 @@ class Book{
     std::string name;
     std::vector<const Author*> authors;
     std::vector<const std::string*> categoriesNames;
-    int publishDate;
+    int price; /// in cents
+    int publishYear;
     int nr_pages;
+    int stockCount = 1;
 
 public:
-    const long long& getISBN()   const {return ISBN;}
+    const long long& getISBN() const {return ISBN;}
+    const int& getPrice() const {return price;}
     const std::string& getName() const {return name;}
     const std::vector<const Author*>& getAuthors() const {return authors;}
     const std::vector<const std::string*>& getCategories() const {return categoriesNames;}
     const int& getNr_pages() const {return nr_pages;}
+    const int& getStockCount() const {return stockCount;}
+
+    Book():ISBN(0),name(""){}
+    Book(const long long& ISBN, const std::string& name,Author& author,
+         const std::vector<const std::string*>& categoriesNames,
+         const double& price, const int& publishYear,const int& nr_pages, const int& stockCount = 1 ):
+        ISBN(ISBN), name(name), categoriesNames(categoriesNames),
+        price(price), publishYear(publishYear), nr_pages(nr_pages),stockCount(stockCount)
+        {authors.push_back(&author);}
+    Book(const long long& ISBN, const std::string& name,   const std::vector<const Author*>& authors,
+         const std::vector<const std::string*>& categoriesNames, const int& price,
+         const int& publishYear,const int& nr_pages, const int& stockCount = 1 ):
+        ISBN(ISBN), name(name), authors(authors),
+        categoriesNames(categoriesNames), price(price),
+        publishYear(publishYear),nr_pages(nr_pages), stockCount(stockCount){}
+
+    void setPrice(const int& newPrice) { price = newPrice;}
+
+    bool operator==(const Book& other) const{
+        return this->ISBN == other.ISBN;
+    }
+    bool operator!=(const Book& other) const{
+        return !(*this == other);
+    }
+
+    bool addBooks(const int& bookAmount){
+        if(bookAmount < 0)
+            return false;
+        stockCount += bookAmount;
+        return true;
+    }
+    bool removeBooks(const int& bookAmount){
+        if(bookAmount < 0)
+            return false;
+        if(bookAmount > stockCount)
+            return false;
+        stockCount -= bookAmount;
+        return true;
+    }
+
 
     void addAuthor(const Author& newAuthor){
         authors.push_back(&newAuthor);
@@ -87,24 +130,14 @@ public:
             return;
         authors[i] = &newAuthor;
     }
+
+
     void replaceCategory(const unsigned int& i, const std::string& newCategoryName){
         if(i > authors.size())
             return;
         categoriesNames[i] = &newCategoryName;
     }
-    Book():ISBN(0),name(""){}
-    Book(const long long& ISBN, const std::string& name,Author& author,
-         const std::vector<const std::string*>& categoriesNames, const int& publishDate,const int& nr_pages ):
-        ISBN(ISBN), name(name),
-        categoriesNames(categoriesNames),
-        publishDate(publishDate),nr_pages(nr_pages)
-        {authors.push_back(&author);}
-    Book(const long long& ISBN, const std::string& name,   const std::vector<const Author*>& authors,
-         const std::vector<const std::string*>& categoriesNames, const int& publishDate,const int& nr_pages ):
-        ISBN(ISBN), name(name),
-        authors(authors),
-        categoriesNames(categoriesNames),
-        publishDate(publishDate),nr_pages(nr_pages){}
+
     Book& operator=(const Book& other){
         /// Guard self assignment
         if (this == &other)
@@ -115,20 +148,12 @@ public:
         name = other.name;
         authors = other.authors;
         categoriesNames = other.categoriesNames;
-        publishDate = other.publishDate;
+        publishYear = other.publishYear;
         nr_pages = other.nr_pages;
 
         /// Return this for chained assignment
         return *this;
     }
-
-      bool operator==(const Book& other) const{
-        return this->ISBN == other.ISBN;
-    }
-    bool operator!=(const Book& other) const{
-        return !(*this == other);
-    }
-
     friend std::ostream& operator<<(std::ostream& out,const Book& book){
         out << "---(BOOK INFO)--- Title: "<< book.name;
         out << "; ISBN: " << book.ISBN;
@@ -139,8 +164,11 @@ public:
         out << "; Categories: ";
         for(unsigned int i = 0 ; i < book.categoriesNames.size(); i ++ )
             out << "(" << i+1 << ": " << *(book.categoriesNames[i]) << ") ";
-
+        out << "; Price: " << book.price / 100 << "." << book.price %100 << "$";
+        out << "; Publish year: " << book.publishYear;
         out << "; Page count: " << book.nr_pages;
+        out << "; Book count: " << book.stockCount;
+
         out << '\n';
         return out;
     }
@@ -177,10 +205,35 @@ public:
         return out;
     }
 };
+class Customer{
+    std::string name;
+    std::string email;
+public:
+    std::string getName() const {return name;}
+    std::string getEmail() const {return email;}
+    void setName(const std::string& newName){ name = newName;}
+    void setEmail(const std::string& newEmail){email = newEmail;}
+
+    Customer(std::string name, std::string email):
+        name(name),email(email){}
+
+    bool operator==(Customer other){
+        return name == other.name &&
+        email == other.email;
+    }
+    friend std::ostream& operator<<(std::ostream& out, const Customer& myCustomer){
+        out << "---(CUSTOMER INFO)--- Name: "<< myCustomer.name;
+        out << "; Email: " << myCustomer.email;
+        out << '\n';
+        return out;
+    }
+};
 
 class Library{
     const int ID;
     std::string name;
+    /// using lists instead of vectors so pointers don't break.
+    std::list<Customer> customers;
     std::list<Book> books;
     std::list<Author> authors;
     std::list<Category> categories;
@@ -363,7 +416,6 @@ public:
         /// Unnecessary.the pointers inside the classes are pointers to const so
         /// they don't need to be manually freed. Default destructor
         /// would have done the exact same.
-        ID = 0;
         name = "";
         books.clear();
         authors.clear();

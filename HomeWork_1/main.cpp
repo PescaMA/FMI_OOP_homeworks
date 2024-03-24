@@ -44,9 +44,9 @@ struct UnitTest{
         categories.push_back(&a);
 
         // Create instances of Book
-        Book hobbit(9783608987492, "The Hobbit", Tolkien, categories, 1937, 310);
-        Book hobbit1(9783608987492, "fake", Tolkien, std::vector<const std::string*>(), 2024, 0);
-        Book LoR(9780544003415, "The Lord of the Rings", Tolkien, categories, 1954, 1178);
+        Book hobbit(9783608987492, "The Hobbit", Tolkien, categories,2000, 1937, 310);
+        Book hobbit1(9783608987492, "fake", Tolkien, std::vector<const std::string*>(),2150, 2024, 0);
+        Book LoR(9780544003415, "The Lord of the Rings", Tolkien, categories, 4999, 1954, 1178);
 
         // Test getters
         assert(hobbit.getISBN() == 9783608987492);
@@ -78,9 +78,9 @@ struct UnitTest{
         std::vector<const std::string*> catNames;
         std::string a = "Fantasy";
         catNames.push_back(&a);
-        Book hobbit(9783608987492, "The Hobbit", Tolkien, catNames, 1937, 310);
-        Book hobbit1(9783608987492, "fake", Tolkien, std::vector<const std::string*>(), 2024, 0);
-        Book LoR(9780544003415, "The Lord of the Rings", Tolkien, catNames, 1954, 1178);
+        Book hobbit(9783608987492, "The Hobbit", Tolkien, catNames,2000, 1937, 310);
+        Book hobbit1(9783608987492, "fake", Tolkien, std::vector<const std::string*>(),2150, 2024, 0);
+        Book LoR(9780544003415, "The Lord of the Rings", Tolkien, catNames, 4999, 1954, 1178);
 
         Category fantasy("Fantasy");
         fantasy.addBook(hobbit);
@@ -106,8 +106,8 @@ struct UnitTest{
         str2.push_back(&b);
 
         // Create books
-        Book book1(123456789, "Book 1", author1, str1, 2000, 300);
-        Book book2(987654321, "Book 2", author2, str2, 1998, 250);
+        Book book1(123456789, "Book 1", author1, str1, 500, 2000, 300);
+        Book book2(987654321, "Book 2", author2, str2, 300, 1998, 250);
 
         // Create library
         Library library(1, "My Library");
