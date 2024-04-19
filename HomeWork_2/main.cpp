@@ -2,7 +2,6 @@
 
 #include "include/LibGame.hpp"
 
-int main()
-{
-    Game test;
+int main(){
+    Lib_Game test;
 }
