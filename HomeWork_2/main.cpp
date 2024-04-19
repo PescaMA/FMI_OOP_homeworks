@@ -1,9 +1,8 @@
 #include <iostream>
 
-using namespace std;
+#include "include/LibGame.hpp"
 
 int main()
 {
-    cout << "Hello world!" << endl;
-    return 0;
+    Game test;
 }
