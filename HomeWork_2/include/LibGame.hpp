@@ -2,7 +2,7 @@
 #define LIB_GAME_H
 #include <memory>
 #include <vector>
-#include <Lib_Enemy.hpp>
+#include "Lib_Enemy.hpp"
 
 namespace LibGame{
     class Game{
