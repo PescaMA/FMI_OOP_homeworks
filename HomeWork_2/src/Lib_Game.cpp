@@ -1,18 +1,19 @@
 #include "LibGame.hpp"
 #include "Utility.hpp"
 #include <iostream>
-
-std::vector<std::unique_ptr<Lib_Enemy> > Lib_Game::allEnemies;
-Lib_Game::Lib_Game(){
+namespace LibGame{
+std::vector<std::unique_ptr<Enemy> > Game::allEnemies;
+Game::Game(){
     std::cout << "A new journey begins.\n";
 }
 
-void Lib_Game::loadAllEnemies(){
+void Game::loadAllEnemies(){
     allEnemies.clear();
     allEnemies.emplace_back(new Worm);
 }
 
-Lib_Game::~Lib_Game(){
+Game::~Game(){
     Utility::cls();
-    std::cout << "Lib_Game finished.\n";
+    std::cout << "Game finished.\n";
+}
 }

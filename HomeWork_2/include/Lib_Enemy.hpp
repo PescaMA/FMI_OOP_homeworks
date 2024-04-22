@@ -1,24 +1,26 @@
 
-#ifndef LIB_Lib_Enemy_H
-#define LIB_Lib_Enemy_H
+#ifndef LIB_ENEMY_H
+#define LIB_ENEMY_H
 
-
-class Lib_Enemy
+namespace LibGame{
+class Enemy
 {
     public:
-        Lib_Enemy();
-        virtual ~Lib_Enemy();
+        Enemy();
+        virtual ~Enemy();
         virtual int attack() = 0;
     protected:
 
     private:
 };
 
-class Worm: public Lib_Enemy{
+class Worm: public Enemy{
     public:
     int attack(){
         return 3;
     }
 };
 
+
+}
 #endif // GAME_H
