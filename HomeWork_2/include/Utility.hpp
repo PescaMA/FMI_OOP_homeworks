@@ -5,5 +5,6 @@
 
 namespace Utility{
     void cls(void);
+    int randInt(int,int);
 }
 #endif // Lib_UTILITY

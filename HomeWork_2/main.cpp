@@ -1,7 +1,8 @@
 #include <iostream>
 
-#include "LibGame.hpp"
+#include "Lib_Game.hpp"
 
 int main(){
     LibGame::Game test;
+    test.run();
 }

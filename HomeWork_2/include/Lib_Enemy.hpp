@@ -1,14 +1,16 @@
-
 #ifndef LIB_ENEMY_H
 #define LIB_ENEMY_H
 
+#include "Lib_Player.hpp"
+
 namespace LibGame{
-class Enemy
+
+class Enemy : public Being
 {
     public:
-        Enemy();
+        Enemy(int,int);
         virtual ~Enemy();
-        virtual int attack() = 0;
+        virtual int attack(Player) = 0;
     protected:
 
     private:
@@ -16,9 +18,8 @@ class Enemy
 
 class Worm: public Enemy{
     public:
-    int attack(){
-        return 3;
-    }
+    Worm();
+    int attack(Player player) override;
 };
 
 

@@ -38,9 +38,9 @@
 		<Unit filename="include/LibGame - Copy (4).hpp" />
 		<Unit filename="include/LibGame - Copy (5).hpp" />
 		<Unit filename="include/LibGame - Copy (6).hpp" />
-		<Unit filename="include/LibGame.hpp" />
 		<Unit filename="include/Lib_Book.hpp" />
 		<Unit filename="include/Lib_Enemy.hpp" />
+		<Unit filename="include/Lib_Game.hpp" />
 		<Unit filename="include/Utility.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/LibGame - Copy (4).cpp" />
