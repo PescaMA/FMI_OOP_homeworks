@@ -3,16 +3,13 @@
 
 namespace LibGame{
 
-    Enemy::Enemy(int maximumHp, int physicalDamage):
-        Being(maximumHp, physicalDamage){}
+    Enemy::Enemy(int maximumHp, int maximumMana, int physicalDamage):
+        Being(maximumHp, maximumMana, physicalDamage){}
     Enemy::~Enemy(){}
     int Enemy::attack(Player player){
-        player.getAttacked(3);
-        return 3;
-    }
-    Worm::Worm(void):Enemy(10,3){}
-    Worm::attack(Player player){
-        player.getAttacked(dmg);
+        player.handleAttack(dmg);
         return dmg;
     }
+    Worm::Worm(void):Enemy(10,0,7){}
+    int Worm::attack(Player player){return Enemy::attack(player);}
 }

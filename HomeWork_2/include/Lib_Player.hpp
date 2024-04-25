@@ -1,14 +1,21 @@
 #ifndef LIB_PLAYER_H
 #define LIB_PLAYER_H
+#include "Utility.hpp"
+
+#include <string>
 
 namespace LibGame{
 
+
+
 class Being{
 protected:
-    int maxHp; /// can be changed so it shouldn't be const.
-    int hp;
+    Utility::limitedStat<int> hp;
+    Utility::limitedStat<int> mana;
+
     int dmg; /// physical damage
-    int mana = 0;
+    double dmgChance = .75;
+    std::string name;
 
 public:
     /*int getDmg() const {return dmg;}
@@ -16,12 +23,13 @@ public:
     int getHP() const {return hp;}*/
 
     void die();
-    void getAttacked(int);
-    void getManaAttacked(int);
+    void handleAttack(int);
+    void manaDrain(int);
     void addHp(int);
     void addMana(int);
 
-    Being(int,int);
+    Being(int,int,int);
+    Being(int,int,int,double);
     ~Being(){}
 };
 

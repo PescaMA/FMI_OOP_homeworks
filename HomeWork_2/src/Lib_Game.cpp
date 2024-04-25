@@ -10,11 +10,17 @@ Game::Game(){
     loadAllEnemies();
     std::cout << "A new journey begins.\n";
 }
-
-void Game::run(){
+Enemy* Game::getRandomEnemy(){
     int i = Utility::randInt(0,allEnemies.size()-1);
-    Enemy* enemy = allEnemies[allEnemiesNames[i]].get();
-    std::cout << enemy->attack(player);
+    return allEnemies[allEnemiesNames[i]].get();
+}
+void Game::run(){
+    Enemy* enemy = getRandomEnemy();
+
+    if(Utility::randProb(.5))
+        std::cout << enemy->attack(player);
+    else
+        std::cout << "attacked failed!";
 
 }
 

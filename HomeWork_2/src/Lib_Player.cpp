@@ -2,24 +2,29 @@
 #include "Lib_Player.hpp"
 #include <iostream>
 namespace LibGame{
-    Being::Being(int maximumHp, int physicalDamage):
-        maxHp(maximumHp),
+
+    Being::Being(int maximumHp,int maximumMana, int physicalDamage,double damageChance):
         hp(maximumHp),
+        mana(maximumMana),
         dmg(physicalDamage),
-        mana(0){}
+        dmgChance(damageChance){
+            mana.setVal(0);
+        }
+    Being::Being(int maximumHp, int maximumMana, int physicalDamage):
+        Being(maximumHp,maximumMana,physicalDamage,0.75){}
     void Being::die(){
         std::cout << "You died";
     }
-    void Being::getAttacked(int val){
+    void Being::handleAttack(int val){
         hp -= val;
-        if(hp <= 0)
+        if(hp == 0)
             die();
     }
-    void Being::getManaAttacked(int val){
-        mana = std::max(0, mana - val);
+    void Being::manaDrain(int val){
+        mana -= val;
     }
     void Being::addHp(int val){
-        hp = std::min(hp + val, maxHp);
+        hp += val;
     }
     void Being::addMana(int val){
 
@@ -27,7 +32,7 @@ namespace LibGame{
 
 
 
-    Player::Player():Being(100,5){}
+    Player::Player():Being(100,0,5){}
 
     Player::~Player(){}
 }

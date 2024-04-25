@@ -8,10 +8,11 @@ namespace LibGame{
 class Enemy : public Being
 {
     public:
-        Enemy(int,int);
+        Enemy(int,int,int);
         virtual ~Enemy();
         virtual int attack(Player) = 0;
     protected:
+        double attackChance;
 
     private:
 };

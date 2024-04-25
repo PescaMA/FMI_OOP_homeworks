@@ -9,11 +9,13 @@
 
 namespace LibGame{
     class Game{
-    private:
+    protected:
+        Player player;
         static std::vector<std::string> allEnemiesNames;
         static std::unordered_map<std::string, std::unique_ptr<Enemy> > allEnemies;
+
         static void loadAllEnemies();
-        Player player;
+        static Enemy* getRandomEnemy();
     public:
         Game();
         void run();
