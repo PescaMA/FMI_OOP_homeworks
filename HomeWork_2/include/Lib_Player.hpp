@@ -6,35 +6,34 @@
 
 namespace LibGame{
 
-
-
 class Being{
 protected:
+    std::string name = "?";
     Utility::limitedStat<int> hp;
     Utility::limitedStat<int> mana;
-
     int dmg; /// physical damage
-    double dmgChance = .75;
-    std::string name;
+    double hitChance = .8;
 
+    void die();
 public:
     /*int getDmg() const {return dmg;}
     int getMana() const {return mana;}
     int getHP() const {return hp;}*/
+    double getHitChance(){return hitChance;}
 
-    void die();
     void handleAttack(int);
     void manaDrain(int);
     void addHp(int);
     void addMana(int);
 
-    Being(int,int,int);
-    Being(int,int,int,double);
-    ~Being(){}
+    Being(void):hp(0),mana(0){}
+    Being(std::string,int,int,int);
+    Being(std::string,int,int,int,double);
+    virtual ~Being(){}
 };
 
 
-class Player : public Being{
+class Player : virtual public Being{
 public:
     void attack();
     Player();

@@ -1,7 +1,6 @@
 #ifndef LIB_UTILITY_H
 #define LIB_UTILITY_H
 
-
 #include <iostream>
 
 namespace Utility{
@@ -31,6 +30,7 @@ namespace Utility{
             update(val + addVal);
         }
         void operator+=(const T& addVal){val = val + addVal;}
+
         void operator-(const T& subVal){
             update(val - subVal);
         }

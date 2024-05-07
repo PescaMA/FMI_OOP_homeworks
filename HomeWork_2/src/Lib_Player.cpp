@@ -3,17 +3,18 @@
 #include <iostream>
 namespace LibGame{
 
-    Being::Being(int maximumHp,int maximumMana, int physicalDamage,double damageChance):
+    Being::Being(std::string name,int maximumHp,int maximumMana, int physicalDamage,double damageChance):
+        name(name),
         hp(maximumHp),
         mana(maximumMana),
         dmg(physicalDamage),
-        dmgChance(damageChance){
+        hitChance(damageChance){
             mana.setVal(0);
         }
-    Being::Being(int maximumHp, int maximumMana, int physicalDamage):
-        Being(maximumHp,maximumMana,physicalDamage,0.75){}
+    Being::Being(std::string name,int maximumHp, int maximumMana, int physicalDamage):
+        Being(name,maximumHp,maximumMana,physicalDamage,0.75){}
     void Being::die(){
-        std::cout << "You died";
+        std::cout << name << " died!\n";
     }
     void Being::handleAttack(int val){
         hp -= val;
@@ -27,12 +28,12 @@ namespace LibGame{
         hp += val;
     }
     void Being::addMana(int val){
-
+        mana += val;
     }
 
 
 
-    Player::Player():Being(100,0,5){}
+    Player::Player():Being("player",100,1,5){} /// default player stats.
 
     Player::~Player(){}
 }

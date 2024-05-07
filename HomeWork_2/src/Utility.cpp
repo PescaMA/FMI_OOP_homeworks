@@ -9,8 +9,8 @@ namespace Utility{
         system("cls||clear");
     }
     int randInt(int a, int b) {
-        unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::mt19937 gen(seed); /// Standard Mersenne twister engine.
+        static unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
+        static std::mt19937 gen(seed); /// Standard Mersenne twister engine.
         /// a Mersenne is a number of the form 2**n - 1. a twister means bitwise operations.
 
         /// Define the distribution for integers between a and b (inclusive)
@@ -21,12 +21,12 @@ namespace Utility{
     }
     bool randProb(double probability){
         if(probability < 0 || probability > 1)
-            throw std::invalid_argument("not a valid probability! ");
+            throw std::invalid_argument("not a valid probability percentage! ");
 
-       unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::mt19937 gen(seed);
+        static unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
+        static std::mt19937 gen(seed);
+        static std::uniform_real_distribution<double> dist(0.0, 1.0);
 
-        std::uniform_real_distribution<double> dist(0.0, 1.0);
         double random_value = dist(gen);
 
         /// Check if the random value is less than the specified probability

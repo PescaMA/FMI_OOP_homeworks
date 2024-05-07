@@ -6,10 +6,21 @@ namespace LibGame{
 std::unordered_map<std::string, std::unique_ptr<Enemy> > Game::allEnemies;
 std::vector<std::string> Game::allEnemiesNames;
 
+void Game::loadAllEnemies(){
+
+    if(!allEnemies.empty())
+        return; /// load only once for all games.
+
+    allEnemies["worm"] = std::unique_ptr<Enemy>(new Worm);
+
+    for(auto &el:allEnemies)
+        allEnemiesNames.push_back(el.first);
+}
 Game::Game(){
     loadAllEnemies();
     std::cout << "A new journey begins.\n";
 }
+
 Enemy* Game::getRandomEnemy(){
     int i = Utility::randInt(0,allEnemies.size()-1);
     return allEnemies[allEnemiesNames[i]].get();
@@ -20,20 +31,11 @@ void Game::run(){
     if(Utility::randProb(.5))
         std::cout << enemy->attack(player);
     else
-        std::cout << "attacked failed!";
+        std::cout << "attacked failed!\n";
 
 }
 
-void Game::loadAllEnemies(){
 
-    if(!allEnemies.empty())
-        return;
-
-    allEnemies["worm"] = std::unique_ptr<Enemy>(new Worm);
-
-    for(auto &el:allEnemies)
-        allEnemiesNames.push_back(el.first);
-}
 
 Game::~Game(){
     ///Utility::cls();
