@@ -16,6 +16,13 @@ namespace LibGame{
     void Being::die(){
         std::cout << name << " died!\n";
     }
+    void Being::displayHealth(std::ostream& out){
+        out << name << " is at " << hp << " health.";
+
+    }
+    bool Being::hitAttack(){
+        return Utility::randProb(hitChance);
+    }
     void Being::handleAttack(int val){
         hp -= val;
         if(hp == 0)

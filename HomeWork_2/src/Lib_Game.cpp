@@ -28,10 +28,18 @@ Enemy* Game::getRandomEnemy(){
 void Game::run(){
     Enemy* enemy = getRandomEnemy();
 
-    if(Utility::randProb(.5))
-        std::cout << enemy->attack(player);
-    else
-        std::cout << "attacked failed!\n";
+    int dmgDealt = enemy->attack(player);
+    if(dmgDealt == -1){
+        std::cout << "attack missed! ";
+        enemy->displayHealth();
+        std::cout << "\n";
+    }
+
+    else{
+        std::cout << "dealt " << dmgDealt << " damage! ";
+        enemy->displayHealth();
+        std::cout << "\n";
+    }
 
 }
 

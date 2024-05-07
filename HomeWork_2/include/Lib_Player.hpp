@@ -21,10 +21,12 @@ public:
     int getHP() const {return hp;}*/
     double getHitChance(){return hitChance;}
 
+    bool hitAttack();
     void handleAttack(int);
     void manaDrain(int);
     void addHp(int);
     void addMana(int);
+    void displayHealth(std::ostream& = std::cout);
 
     Being(void):hp(0),mana(0){}
     Being(std::string,int,int,int);

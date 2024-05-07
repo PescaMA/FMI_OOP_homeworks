@@ -36,6 +36,10 @@ namespace Utility{
         }
         void operator-=(const T& subVal){ val = val - subVal;}
         bool operator==(const T& val){return this->val == val;}
+        friend std::ostream& operator<<(std::ostream& out, const limitedStat& stat){
+            out << stat.val << "/" << stat.maxVal;
+            return out;
+        }
     };
 }
 #endif // Lib_UTILITY

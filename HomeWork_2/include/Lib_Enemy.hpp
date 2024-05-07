@@ -8,7 +8,8 @@ namespace LibGame{
 class Enemy :virtual public Being
 {
     public:
-        Enemy(std::string,int,int,int);
+        Enemy(){}
+        Enemy(std::string,int,int,int,double);
         virtual ~Enemy();
         virtual int attack(Player) = 0;
     protected:
