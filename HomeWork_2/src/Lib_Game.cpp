@@ -25,21 +25,27 @@ Enemy* Game::getRandomEnemy(){
     int i = Utility::randInt(0,allEnemies.size()-1);
     return allEnemies[allEnemiesNames[i]].get();
 }
+void Game::makeEnemyAttack(Enemy* enemy){
+    enemy->attack(&player);
+}
+
+void Game::playerAction(Enemy* enemy){
+    std::cout << "\nPress 0 to pass \nPress 1 to attack:";
+    int action = Utility::readInt();
+
+
+
+    switch(action){
+        case 0: {std::cout << "pass\n"; break;}
+        case 1: {player.attack(enemy); break;}
+        default: {std::cout << "\nnot a valid command! Try again:";playerAction(enemy);}
+    }
+}
 void Game::run(){
+
     Enemy* enemy = getRandomEnemy();
-
-    int dmgDealt = enemy->attack(player);
-    if(dmgDealt == -1){
-        std::cout << "attack missed! ";
-        enemy->displayHealth();
-        std::cout << "\n";
-    }
-
-    else{
-        std::cout << "dealt " << dmgDealt << " damage! ";
-        enemy->displayHealth();
-        std::cout << "\n";
-    }
+    playerAction(enemy);
+    makeEnemyAttack(enemy);
 
 }
 

@@ -4,6 +4,7 @@
 #include <iostream>
 
 namespace Utility{
+    int readInt(std::istream& = std::cin,std::ostream& out = std::cout);
     void cls(void);
     int randInt(int,int);
     bool randProb(double);
@@ -12,20 +13,20 @@ namespace Utility{
     class limitedStat{
 
     protected:
-        T val;
         T maxVal;
+        T val;
         void update(T newVal){
             val = std::min(newVal, maxVal);
             val = std::max(val, 0);
         }
     public:
+        limitedStat(T maxVal):maxVal(maxVal),val(maxVal){}
         T getVal()const{return val;}
         void setVal(T newVal){update(newVal);}
         void setMax(T newVal){
             maxVal = newVal;
             update(val);
         }
-        limitedStat(T maxVal):maxVal(maxVal){}
         void operator+(const T& addVal){
             update(val + addVal);
         }

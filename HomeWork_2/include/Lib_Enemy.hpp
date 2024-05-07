@@ -11,7 +11,6 @@ class Enemy :virtual public Being
         Enemy(){}
         Enemy(std::string,int,int,int,double);
         virtual ~Enemy();
-        virtual int attack(Player) = 0;
     protected:
         double attackChance;
 
@@ -21,47 +20,47 @@ class Enemy :virtual public Being
 class Worm: public Enemy{
     public:
     Worm();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 class BookWorm: public Enemy{
     public:
     BookWorm();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 class Mouse: public Enemy{
     public:
     Mouse();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 class Owl: public Enemy{
     public:
     Owl();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 class InkElemental: public Enemy{
     public:
     InkElemental();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 class LibrarianGhost: public Enemy{
     public:
     LibrarianGhost();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 class CursedScroll: public Enemy{
     public:
     CursedScroll();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 class PaperDragon: public Enemy{
     public:
     PaperDragon();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 class ActualLibrarian: public Enemy, public Player{
     public:
     ActualLibrarian();
-    int attack(Player player) override;
+    void attackLogic(Being*) override;
 };
 
 }

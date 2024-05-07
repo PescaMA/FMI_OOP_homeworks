@@ -5,6 +5,17 @@
 #include <chrono>
 namespace Utility{
 
+    int readInt(std::istream& in,std::ostream& out){
+        try{
+            std::string s;
+            in >> s;
+            return stoi(s);
+        }
+        catch (std::invalid_argument){
+            out << "input a integer! Try again:";
+            return readInt(in,out);
+        }
+    }
     void cls(){
         system("cls||clear");
     }

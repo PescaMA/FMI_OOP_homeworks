@@ -6,6 +6,13 @@
 
 namespace LibGame{
 
+class attackMiss : public std::exception {
+    public:
+    const char * what () {
+        return "Attack missed. ";
+    }
+};
+
 class Being{
 protected:
     std::string name = "?";
@@ -13,17 +20,24 @@ protected:
     Utility::limitedStat<int> mana;
     int dmg; /// physical damage
     double hitChance = .8;
+    int lvl = 0;
 
     void die();
 public:
-    /*int getDmg() const {return dmg;}
+    int getDamage() const {return dmg;}
+    /*
     int getMana() const {return mana;}
     int getHP() const {return hp;}*/
     double getHitChance(){return hitChance;}
+    int getLvl(){return lvl;}
+    void setLvl(int);
 
     bool hitAttack();
-    void handleAttack(int);
+    bool attack(Being*);
+    virtual void attackLogic(Being*);
+    void handleAttack(Being*);
     void manaDrain(int);
+    void takeDamage(int);
     void addHp(int);
     void addMana(int);
     void displayHealth(std::ostream& = std::cout);
@@ -32,12 +46,13 @@ public:
     Being(std::string,int,int,int);
     Being(std::string,int,int,int,double);
     virtual ~Being(){}
+    friend std::ostream& operator<<(std::ostream&, Being);
 };
 
 
 class Player : virtual public Being{
 public:
-    void attack();
+    void attackLogic (Being*) override;
     Player();
     ~Player();
 };

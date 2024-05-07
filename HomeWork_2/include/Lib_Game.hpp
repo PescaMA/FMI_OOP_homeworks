@@ -16,6 +16,9 @@ namespace LibGame{
 
         static void loadAllEnemies();
         static Enemy* getRandomEnemy();
+        void makeEnemyAttack(Enemy*);
+        void displayAttack(Being*,int);
+        void playerAction(Enemy*);
     public:
         Game();
         void run();
