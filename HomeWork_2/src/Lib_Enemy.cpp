@@ -1,3 +1,4 @@
+#include "Utility.hpp"
 #include "Lib_Enemy.hpp"
 #include <iostream>
 
@@ -8,9 +9,19 @@ namespace LibGame{
         minLvl(minLvl){
         }*/
     Enemy::Enemy(int minLevel): minLvl(minLevel){}
+
+    void Enemy::randomizeLvl(int playerLvl){
+        if(playerLvl < minLvl)
+            return;
+        lvl = Utility::randInt(minLvl,playerLvl);
+    }
+    int Enemy::getExpWorth()const{
+        return getLvl();
+    }
     void Enemy::setLvl(int newLvl){
         lvl = std::min(newLvl,minLvl);
     }
+
     Enemy::~Enemy(){}
 
     Worm::Worm(void):Being("worm",10,0,3),Enemy(1){}

@@ -9,6 +9,7 @@ namespace Utility{
     void cls(void);
     int randInt(int,int);
     bool randProb(double);
+    int scale20(int,int);
 
     template<class T>
     class limitedStat{
@@ -23,6 +24,7 @@ namespace Utility{
     public:
         limitedStat(T maxVal):maxVal(maxVal),val(maxVal){}
         T getVal()const{return val;}
+        T getMaxVal() const {return maxVal;}
         void setVal(T newVal){update(newVal);}
         void setMax(T newVal){
             maxVal = newVal;
@@ -31,15 +33,16 @@ namespace Utility{
         void operator+(const T& addVal){
             update(val + addVal);
         }
-        void operator+=(const T& addVal){val = val + addVal;}
+        void operator+=(const T& addVal){*this + addVal;}
 
         void operator-(const T& subVal){
             update(val - subVal);
         }
-        void operator-=(const T& subVal){ val = val - subVal;}
+        void operator-=(const T& subVal){*this - subVal;}
+
         bool operator==(const T& val){return this->val == val;}
         friend std::ostream& operator<<(std::ostream& out, const limitedStat& stat){
-            out << stat.val << "/" << stat.maxVal;
+            out << stat.val << "/" << stat.getMaxVal();
             return out;
         }
     };

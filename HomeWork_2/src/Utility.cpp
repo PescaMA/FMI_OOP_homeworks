@@ -16,6 +16,9 @@ namespace Utility{
             return readInt(in,out);
         }
     }
+    int scale20(int dmg, int lvl){
+        return static_cast<int>(dmg * (.8 + .2 * lvl));
+    }
     void cls(){
         system("cls||clear");
     }

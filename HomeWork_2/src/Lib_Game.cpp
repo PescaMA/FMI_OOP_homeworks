@@ -46,9 +46,14 @@ Enemy* Game::getRandomEnemy(){
     if(fightableEnemies.empty())
         throw std::logic_error("no enemies are low level enough!");
     int i = Utility::randInt(0,fightableEnemies.size()-1);
+
+    fightableEnemies[i]->randomizeLvl(player.getLvl());
+
     return fightableEnemies[i].get();
 }
 void Game::makeEnemyAttack(Enemy* enemy){
+    if(enemy->isDead())
+        return;
     enemy->attack(&player);
 }
 
@@ -56,26 +61,41 @@ void Game::playerAction(Enemy* enemy){
     std::cout << "\nPress 0 to pass \nPress 1 to attack:";
     int action = Utility::readInt();
 
-
+    Utility::cls();
 
     switch(action){
-        case 0: {std::cout << "\nPlayer passed!\n"; break;}
+        case 0: {std::cout << "\nPlayer passed!\n" << *enemy; break;}
         case 1: {player.attack(enemy); break;}
         default: {std::cout << "\nnot a valid command! Try again:";playerAction(enemy);}
     }
 }
 void Game::run(){
-
     Enemy* enemy = getRandomEnemy();
-    playerAction(enemy);
-    makeEnemyAttack(enemy);
+    while(!player.isDead()){
+        enemy = getRandomEnemy();
+        std::cout << "Now fighting: " << *enemy;
+        while(!enemy->isDead() && !player.isDead()){
+            playerAction(enemy);
 
+            makeEnemyAttack(enemy);
+            if(!enemy->isDead())
+                std::cout << "\n\n" << *enemy;
+            std::cout << player;
+        }
+        if(enemy->isDead()){
+            player.addExp(enemy->getExpWorth());
+            enemy->reset();
+        }
+
+    }
+    if(player.isDead())
+        std::cout << "Game over! You were defeated by " << enemy->getName();
 }
 
 
 
 Game::~Game(){
-    ///Utility::cls();
+
     std::cout << "Game finished.\n";
 }
 }

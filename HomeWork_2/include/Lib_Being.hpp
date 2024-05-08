@@ -37,10 +37,11 @@ namespace LibGame{
     protected:
         int lvl = 1;
         int xp = 0;
+        void printExp(std::ostream& out = std::cout);
     public:
-        void levelUp();
+        virtual void levelUp();
         int getLevelUpExp();
-        int getLvl(){return lvl;}
+        int getLvl()const{return lvl;}
         virtual void setLvl(int);
         void addExp(int);
     };
@@ -52,13 +53,15 @@ namespace LibGame{
 
         void die() override;
     public:
+        void reset();
         int getDamage() const;
 
+        const std::string& getName() const{return name;}
         double getHitChance(){return hitChance;}
-
         bool hitAttack();
         bool attack(Being*);
         virtual void attackLogic(Being*);
+        void levelUp() override;
 
         Being(void):Hp(0),Mana(0){}
         Being(std::string,int,int,int);
