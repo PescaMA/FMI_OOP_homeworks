@@ -2,6 +2,7 @@
 #define LIB_UTILITY_H
 
 #include <iostream>
+#include <vector>
 
 namespace Utility{
     int readInt(std::istream& = std::cin,std::ostream& out = std::cout);
