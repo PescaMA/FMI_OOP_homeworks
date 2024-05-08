@@ -17,6 +17,7 @@ namespace LibGame{
         std::vector<std::unique_ptr<Book>> spellsNotLearned;
         void loadInitialBooks();
         bool learnNewBook();
+        void learnNewBooks();
     public:
         void attackLogic (Being*) override;
         Player();

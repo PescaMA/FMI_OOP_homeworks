@@ -19,7 +19,7 @@ namespace LibGame{
                 return manaEfficiency * baseVal;
             }
             int getMinLvl() const {return minLvl;}
-            int getBaseVal(int lvl = 1){
+            int getBaseVal(int lvl = 1) const{
                 int modifier = static_cast<int>(lvl) * .4;
                 return baseVal * std::min(modifier, 1);
             }

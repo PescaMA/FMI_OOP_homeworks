@@ -8,14 +8,14 @@ namespace LibGame{
 
 class Enemy :virtual public Being
 {
-    public:
-        Enemy(){}
-        Enemy(std::string,int,int,int,double);
-        virtual ~Enemy();
-    protected:
-        double attackChance;
+    int minLvl = 1; /// min level for player.
 
-    private:
+    public:
+        Enemy(int);
+        int getMinLvl(){return minLvl;}
+        void setLvl(int) override;
+
+        virtual ~Enemy();
 };
 
 class Worm: public Enemy{

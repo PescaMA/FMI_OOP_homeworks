@@ -1,20 +1,41 @@
 #include "Lib_Game.hpp"
 #include "Utility.hpp"
-#include <iostream>
-namespace LibGame{
 
-std::unordered_map<std::string, std::unique_ptr<Enemy> > Game::allEnemies;
-std::vector<std::string> Game::allEnemiesNames;
+#include <iostream>
+#include <algorithm>
+
+namespace LibGame{
 
 void Game::loadAllEnemies(){
 
-    if(!allEnemies.empty())
+    if(!fightableEnemies.empty() || !nonFightableEnemies.empty())
         return; /// load only once for all games.
 
-    allEnemies["worm"] = std::unique_ptr<Enemy>(new Worm);
+    nonFightableEnemies.emplace_back(new Worm);
+    nonFightableEnemies.emplace_back(new BookWorm);
+    nonFightableEnemies.emplace_back(new Mouse);
+    nonFightableEnemies.emplace_back(new Owl);
+    nonFightableEnemies.emplace_back(new InkElemental);
+    nonFightableEnemies.emplace_back(new CursedScroll);
+    nonFightableEnemies.emplace_back(new PaperDragon);
+    nonFightableEnemies.emplace_back(new ActualLibrarian);
 
-    for(auto &el:allEnemies)
-        allEnemiesNames.push_back(el.first);
+    std::sort(nonFightableEnemies.begin(),nonFightableEnemies.end(),
+                  [](std::unique_ptr<Enemy>& ptr1,std::unique_ptr<Enemy>& ptr2){
+                  return ptr1->getMinLvl() > ptr2->getMinLvl();});
+
+    addNewEnemies();
+}
+bool Game::addNewEnemy(){
+    if(nonFightableEnemies.empty() || nonFightableEnemies.back()->getMinLvl() > player.getLvl())
+        return false;
+
+    fightableEnemies.push_back(std::move(nonFightableEnemies.back()));
+    nonFightableEnemies.pop_back();
+    return true;
+}
+void Game::addNewEnemies(){
+    while(addNewEnemy());
 }
 Game::Game(){
     loadAllEnemies();
@@ -22,8 +43,10 @@ Game::Game(){
 }
 
 Enemy* Game::getRandomEnemy(){
-    int i = Utility::randInt(0,allEnemies.size()-1);
-    return allEnemies[allEnemiesNames[i]].get();
+    if(fightableEnemies.empty())
+        throw std::logic_error("no enemies are low level enough!");
+    int i = Utility::randInt(0,fightableEnemies.size()-1);
+    return fightableEnemies[i].get();
 }
 void Game::makeEnemyAttack(Enemy* enemy){
     enemy->attack(&player);

@@ -3,10 +3,37 @@
 
 namespace LibGame{
 
+    void Hp::takeDamage(int val){
+        hp-=val;
+        if(hp == 0)
+            die();
+    }
+    void Exp::setLvl(int newLvl){
+        if(newLvl <= 0)
+            throw std::logic_error("Level cannot be negative!");
+        lvl = newLvl;
+    }
+    int Exp::getLevelUpExp(){
+        return ( 1 << lvl );
+    }
+    void Exp::levelUp(){
+        xp = 0;
+        lvl++;
+    }
+    void Exp::addExp(int val){
+        if(val < 0)
+            throw std::runtime_error("Experience points can't be negative!");
+        while(xp + val >= getLevelUpExp()){
+            val -= getLevelUpExp() - xp;
+            levelUp();
+        }
+        xp += val;
+    }
+
     Being::Being(std::string name,int maximumHp,int maximumMana, int physicalDamage,double damageChance):
+        Hp(maximumHp),
+        Mana(maximumMana),
         name(name),
-        hp(maximumHp),
-        mana(maximumMana),
         dmg(physicalDamage),
         hitChance(damageChance){
             mana.setVal(0);
@@ -19,32 +46,11 @@ namespace LibGame{
     int Being::getDamage() const {
         return dmg * lvl;
     }
-    void Being::setLvl(int newLvl){
-        if(newLvl <= 0)
-            throw std::logic_error("Level cannot be negative!");
-        lvl = newLvl;
-    }
-    void Being::displayHealth(std::ostream& out){
-        out << name << " is at " << hp << " health.";
 
-    }
     bool inline Being::hitAttack(){
         return Utility::randProb(hitChance);
     }
-    void Being::manaDrain(int val){
-        mana -= val;
-    }
-    void Being::takeDamage(int val){
-        hp-=val;
-        if(hp == 0)
-            die();
-    }
-    void Being::addHp(int val){
-        hp += val;
-    }
-    void Being::addMana(int val){
-        mana += val;
-    }
+
     bool Being::attack(Being* being){
         std::cout << "\n";
         if(!hitAttack()){

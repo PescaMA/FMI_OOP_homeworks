@@ -33,7 +33,9 @@ namespace LibGame{
         spellsLearned.push_back(std::move(spellsNotLearned.back()));
         spellsNotLearned.pop_back();
         return true;
-
+    }
+    void Player::learnNewBooks(){
+        while(learnNewBook());
     }
 
     Player::Player():Being("player",100,1,5){

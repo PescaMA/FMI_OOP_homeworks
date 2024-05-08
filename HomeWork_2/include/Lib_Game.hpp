@@ -11,11 +11,13 @@ namespace LibGame{
     class Game{
     protected:
         Player player;
-        static std::vector<std::string> allEnemiesNames;
-        static std::unordered_map<std::string, std::unique_ptr<Enemy> > allEnemies;
+        std::vector<std::unique_ptr<Enemy> > fightableEnemies;
+        std::vector<std::unique_ptr<Enemy> > nonFightableEnemies;
 
-        static void loadAllEnemies();
-        static Enemy* getRandomEnemy();
+        void loadAllEnemies();
+        void addNewEnemies();
+        bool addNewEnemy();
+        Enemy* getRandomEnemy();
         void makeEnemyAttack(Enemy*);
         void displayAttack(Being*,int);
         void playerAction(Enemy*);

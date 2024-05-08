@@ -10,36 +10,57 @@ namespace LibGame{
             return "Attack missed. ";
         }
     };
-    class Being{
+
+    class Hp{
+    protected:
+        Utility::limitedStat<int> hp;
+        virtual void die() = 0; /// pure virtual.
+    public:
+        Hp(int val = 0):hp(val){}
+        int getHP() const {return hp.getVal();}
+        void addHp(int val){hp += val;}
+        bool isDead(){return hp == 0;}
+        void takeDamage(int);
+    };
+
+    class Mana{
+    protected:
+        Utility::limitedStat<int> mana;
+    public:
+        Mana(int val = 0):mana(val){}
+        int getMana() const {return mana.getVal();}
+        void addMana(int val){mana += val;}
+        void drainMana(int val){mana -= val;}
+    };
+
+    class Exp{
+    protected:
+        int lvl = 1;
+        int xp = 0;
+    public:
+        void levelUp();
+        int getLevelUpExp();
+        int getLvl(){return lvl;}
+        virtual void setLvl(int);
+        void addExp(int);
+    };
+    class Being : public Hp, public Mana, public Exp{
     protected:
         std::string name = "?";
-        Utility::limitedStat<int> hp;
-        Utility::limitedStat<int> mana;
         int dmg; /// physical damage
         double hitChance = .8;
-        int lvl = 1;
 
-        void die();
+        void die() override;
     public:
         int getDamage() const;
-        /*
-        int getMana() const {return mana;}
-        int getHP() const {return hp;}*/
+
         double getHitChance(){return hitChance;}
-        int getLvl(){return lvl;}
-        void setLvl(int);
 
         bool hitAttack();
         bool attack(Being*);
         virtual void attackLogic(Being*);
-        void handleAttack(Being*);
-        void manaDrain(int);
-        void takeDamage(int);
-        void addHp(int);
-        void addMana(int);
-        void displayHealth(std::ostream& = std::cout);
 
-        Being(void):hp(0),mana(0){}
+        Being(void):Hp(0),Mana(0){}
         Being(std::string,int,int,int);
         Being(std::string,int,int,int,double);
         virtual ~Being(){}
