@@ -36,7 +36,7 @@ void Game::playerAction(Enemy* enemy){
 
 
     switch(action){
-        case 0: {std::cout << "pass\n"; break;}
+        case 0: {std::cout << "\nPlayer passed!\n"; break;}
         case 1: {player.attack(enemy); break;}
         default: {std::cout << "\nnot a valid command! Try again:";playerAction(enemy);}
     }

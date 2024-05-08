@@ -1,6 +1,7 @@
 #ifndef LIB_ENEMY_H
 #define LIB_ENEMY_H
 
+#include "Lib_Being.hpp"
 #include "Lib_Player.hpp"
 
 namespace LibGame{
