@@ -60,7 +60,7 @@ namespace LibGame{
             out << "Not a valid command! Try again:\n";
             return chooseSpell(being,in,out);
         }
-        out << "Chose " << spellsLearned[i]->getName() << "!\n";
+        out << name << "Chose " << spellsLearned[i]->getName() << "!\n";
 
         castSpell(i,being);
 

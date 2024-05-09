@@ -78,7 +78,7 @@ namespace LibGame{
     bool Being::attack(Being* being){
         std::cout << "\n";
         if(!hitAttack()){
-            std::cout << name << " missed!\n" << *being;
+            std::cout << name << " missed!\n";
             return false;
         }
         attackLogic(being);

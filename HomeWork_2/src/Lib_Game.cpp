@@ -90,11 +90,16 @@ void Game::run(){
             player.addExp(enemy->getExpWorth());
             enemy->reset();
             addNewEnemies();
+
+            if(dynamic_cast<ActualLibrarian*>(enemy))
+                break;
         }
 
     }
     if(player.isDead())
         std::cout << "Game over! You were defeated by " << enemy->getName();
+    else
+        std::cout << "You WIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!.\n";
 }
 
 

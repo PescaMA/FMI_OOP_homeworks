@@ -27,7 +27,8 @@ namespace Utility{
         limitedStat(T maxVal):maxVal(maxVal),baseMaxVal(maxVal),val(maxVal){}
         T getVal()const{return val;}
         T getMaxVal() const {return maxVal;}
-        void scaleMaxVal(int value,int scale = 20){maxVal = scaleBase(baseMaxVal,value,scale);}
+        void scaleMaxVal(int value,int scale = 20){maxVal = scaleBase(baseMaxVal,value,scale);
+        update(val);}
         void setVal(T newVal){update(newVal);}
         void setMax(T newVal){
             maxVal = newVal;

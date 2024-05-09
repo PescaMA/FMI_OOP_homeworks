@@ -105,6 +105,16 @@ namespace LibGame{
         }
     }
 
-    ActualLibrarian::ActualLibrarian(void):Being("real librarian",100,40,10),Enemy(11){}
-    void ActualLibrarian::attackLogic(Being* being){return Being::attackLogic(being);}
+    ActualLibrarian::ActualLibrarian(void):Being("real librarian",100,20,8),Enemy(11){
+        mana.scaleMaxVal(lvl);
+        addMana(mana.getMaxVal());
+    }
+    void ActualLibrarian::attackLogic(Being* being){
+        unsigned randomI = Utility::randInt(1,spellsLearned.size()) - 1;
+        try{
+            castSpell(randomI,being);
+        }catch(std::logic_error){
+            Player::attackLogic(being);
+        }
+    }
 }

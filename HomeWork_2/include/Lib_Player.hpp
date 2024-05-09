@@ -13,6 +13,7 @@
 namespace LibGame{
 
     class Player : virtual public Being{
+    protected:
         std::vector<std::unique_ptr<Book>> spellsLearned;
         std::vector<std::unique_ptr<Book>> spellsNotLearned;
         void loadInitialBooks();
