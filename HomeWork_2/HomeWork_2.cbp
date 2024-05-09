@@ -24,6 +24,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-std=c++11" />
 					<Add directory="include" />
 				</Compiler>
 				<Linker>
@@ -35,17 +36,14 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="include/LibGame - Copy (5).hpp" />
-		<Unit filename="include/LibGame - Copy (6).hpp" />
+		<Unit filename="include/Lib_Being.hpp" />
 		<Unit filename="include/Lib_Book.hpp" />
 		<Unit filename="include/Lib_Enemy.hpp" />
 		<Unit filename="include/Lib_Game.hpp" />
 		<Unit filename="include/Lib_Player.hpp" />
 		<Unit filename="include/Utility.hpp" />
 		<Unit filename="main.cpp" />
-		<Unit filename="src/LibGame - Copy (5).cpp" />
-		<Unit filename="src/LibGame - Copy (6).cpp" />
-		<Unit filename="src/LibGame - Copy (7).cpp" />
+		<Unit filename="src/Lib_Being.cpp" />
 		<Unit filename="src/Lib_Book.cpp" />
 		<Unit filename="src/Lib_Enemy.cpp" />
 		<Unit filename="src/Lib_Game.cpp" />

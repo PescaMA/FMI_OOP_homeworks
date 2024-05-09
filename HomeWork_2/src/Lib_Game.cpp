@@ -85,6 +85,7 @@ void Game::run(){
         if(enemy->isDead()){
             player.addExp(enemy->getExpWorth());
             enemy->reset();
+            addNewEnemies();
         }
 
     }

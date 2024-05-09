@@ -16,15 +16,17 @@ namespace Utility{
 
     protected:
         T maxVal;
+        const T baseMaxVal;
         T val;
         void update(T newVal){
             val = std::min(newVal, maxVal);
             val = std::max(val, 0);
         }
     public:
-        limitedStat(T maxVal):maxVal(maxVal),val(maxVal){}
+        limitedStat(T maxVal):maxVal(maxVal),baseMaxVal(maxVal),val(maxVal){}
         T getVal()const{return val;}
         T getMaxVal() const {return maxVal;}
+        void scaleMaxVal(int scale){maxVal = scale20(baseMaxVal,scale);}
         void setVal(T newVal){update(newVal);}
         void setMax(T newVal){
             maxVal = newVal;

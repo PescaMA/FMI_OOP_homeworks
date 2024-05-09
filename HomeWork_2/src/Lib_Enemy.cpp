@@ -14,12 +14,14 @@ namespace LibGame{
         if(playerLvl < minLvl)
             return;
         lvl = Utility::randInt(minLvl,playerLvl);
+        scaleLvl();
     }
     int Enemy::getExpWorth()const{
         return getLvl();
     }
     void Enemy::setLvl(int newLvl){
         lvl = std::min(newLvl,minLvl);
+        scaleLvl();
     }
 
     Enemy::~Enemy(){}
@@ -34,7 +36,7 @@ namespace LibGame{
     Mouse::Mouse(void):Being("mouse",20,0,5),Enemy(2){}
     void Mouse::attackLogic(Being* being){return Being::attackLogic(being);}
 
-    Owl::Owl(void):Being("owl",40,5,6),Enemy(3){}
+    Owl::Owl(void):Being("owl",30,5,6),Enemy(3){}
     void Owl::attackLogic(Being* being){return Being::attackLogic(being);}
 
     InkElemental::InkElemental(void):Being("ink elemental",30,10,1),Enemy(4){}

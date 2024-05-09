@@ -55,6 +55,10 @@ namespace LibGame{
     public:
         void reset();
         int getDamage() const;
+        void scaleLvl(){
+            hp.scaleMaxVal(lvl);
+            mana.scaleMaxVal(lvl);
+        }
 
         const std::string& getName() const{return name;}
         double getHitChance(){return hitChance;}

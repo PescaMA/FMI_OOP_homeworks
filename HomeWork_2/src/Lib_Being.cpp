@@ -8,6 +8,7 @@ namespace LibGame{
         if(hp == 0)
             die();
     }
+
     void Exp::setLvl(int newLvl){
         if(newLvl <= 0)
             throw std::logic_error("Level cannot be negative!");
@@ -35,6 +36,7 @@ namespace LibGame{
 
     void Being::levelUp(){
         Exp::levelUp();
+        scaleLvl();
     }
     Being::Being(std::string name,int maximumHp,int maximumMana, int physicalDamage,double damageChance):
         Hp(maximumHp),
@@ -43,6 +45,7 @@ namespace LibGame{
         dmg(physicalDamage),
         hitChance(damageChance){
             mana.setVal(0);
+            scaleLvl();
         }
     Being::Being(std::string name,int maximumHp, int maximumMana, int physicalDamage):
         Being(name,maximumHp,maximumMana,physicalDamage,0.8){}
