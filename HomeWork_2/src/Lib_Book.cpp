@@ -23,8 +23,11 @@ namespace LibGame{
 
     DrainManaBook::DrainManaBook():Book("Book of mana draining",3,1,1){}
     void DrainManaBook::use(Being* caster,Being* target, std::ostream& out) const{
-        out << caster->getName() << " drained " << getVal(caster->getLvl()) << " mana from " << target->getName() << "\n";
-        target->drainMana(getVal(caster->getLvl()));
+        int manaDamage = getVal(caster->getLvl());
+        out << caster->getName() << " drained " << manaDamage  << " mana from " << target->getName() << "\n";
+        int enemyMana = target->getMana();
+        target->drainMana(manaDamage);
+        caster->addMana(std::min(enemyMana,manaDamage));
     }
 
     FireBook::FireBook():Book("Book of fire",8,2,3){}

@@ -32,25 +32,78 @@ namespace LibGame{
         return this->Enemy::attackLogic(being);}
 
     BookWorm::BookWorm(void):Being("book worm",10,3,1),Enemy(1){}
-    void BookWorm::attackLogic(Being* being){return Being::attackLogic(being);}
+    void BookWorm::attackLogic(Being* being){
+        int damage = getDamage();
+        if(mana.getVal() > damage){
+            std::cout << name << " drained " << damage << " mana!\n";
+            being->drainMana(damage);
+            drainMana(damage);
+        }
+        else{
+            addMana(damage);
+            std::cout << name << " recovered " << damage << " mana!\n";
+        }
+    }
+
 
     Mouse::Mouse(void):Being("mouse",20,0,5),Enemy(2){}
     void Mouse::attackLogic(Being* being){return Being::attackLogic(being);}
 
     Owl::Owl(void):Being("owl",30,5,6),Enemy(3){}
-    void Owl::attackLogic(Being* being){return Being::attackLogic(being);}
+    void Owl::attackLogic(Being* being){
+        int damage = Utility::scaleBase(2,lvl,50);
+        if(mana.getVal() > damage){
+            std::cout << name << " drained " << damage << " mana\n";
+            being->drainMana(damage);
+            drainMana(2);
+            std::cout << " and lost 2 mana!\n";
+        }
+        else
+            return Being::attackLogic(being);
+    }
 
     InkElemental::InkElemental(void):Being("ink elemental",30,10,1),Enemy(4){}
-    void InkElemental::attackLogic(Being* being){return Being::attackLogic(being);}
+    void InkElemental::attackLogic(Being* being){
+        int damage = Utility::scaleBase(3,lvl,50);
+        if(mana.getVal() > damage){
+            std::cout << name << " drained " << damage << " mana\n";
+            being->drainMana(damage);
+            addMana(2);
+            std::cout << " and gained 2 mana!\n";
+        }
+        Being::attackLogic(being);
+    }
 
     LibrarianGhost::LibrarianGhost(void):Being("ghost of a librarian",40,20,0),Enemy(6){}
-    void LibrarianGhost::attackLogic(Being* being){return Being::attackLogic(being);}
+    void LibrarianGhost::attackLogic(Being* being){
+        int damage = std::min(15,(getMana()>>1));
+        if(damage > 1){
+            being->takeDamage(damage);
+            drainMana(damage);
+            std::cout << name << " used " << damage << " mana to deal damage! ";
+        }
+        else{
+            addMana(15);
+            std::cout << name << " gained 15 mana.\n";
+        }
+    }
 
     CursedScroll::CursedScroll(void):Being("cursed scroll",40,0,15),Enemy(6){}
     void CursedScroll::attackLogic(Being* being){return Being::attackLogic(being);}
 
     PaperDragon::PaperDragon(void):Being("paper dragon",60,20,8),Enemy(8){}
-    void PaperDragon::attackLogic(Being* being){return Being::attackLogic(being);}
+    void PaperDragon::attackLogic(Being* being){
+        int damage = std::min(10,(getMana()>>1)) + getDamage();
+        if(getMana() > 5){
+            being->takeDamage(damage);
+            drainMana(damage);
+            std::cout << name << " used " << damage << " mana to deal damage! ";
+        }
+        else{
+            addMana(10);
+            std::cout << name << " gained 15 mana.\n";
+        }
+    }
 
     ActualLibrarian::ActualLibrarian(void):Being("real librarian",100,40,10),Enemy(11){}
     void ActualLibrarian::attackLogic(Being* being){return Being::attackLogic(being);}
