@@ -58,17 +58,24 @@ void Game::makeEnemyAttack(Enemy* enemy){
 }
 
 void Game::playerAction(Enemy* enemy){
-    std::cout << "\nPress 0 to pass \nPress 1 to attack\nPress 2 to choose spell:";
+    std::cout << "\n" << *enemy << player;
+    std::cout << "Press 0 to focus (gain mana)\n";
+    std::cout << "Press 1 to attack for " << player.getDamage();
+    std::cout << "\nPress 2 to choose spell:";
     int action = Utility::readInt();
 
     Utility::cls();
 
+    try{
     switch(action){
-        case 0: {std::cout << "\nPlayer passed!\n" << *enemy; break;}
+        case 0: {player.focus(); break;}
         case 1: {player.attack(enemy); break;}
         case 2: {player.chooseSpell(enemy);break;}
         default: {std::cout << "\nnot a valid command! Try again:";playerAction(enemy);}
-    }
+    }} catch(std::logic_error noMana){
+            std::cout << noMana.what() << "\n\nTry again:\n";
+            return playerAction(enemy);
+        }
 }
 void Game::run(){
     Enemy* enemy = getRandomEnemy();
@@ -77,11 +84,7 @@ void Game::run(){
         std::cout << "Now fighting: " << *enemy;
         while(!enemy->isDead() && !player.isDead()){
             playerAction(enemy);
-
             makeEnemyAttack(enemy);
-            if(!enemy->isDead())
-                std::cout << "\n\n" << *enemy;
-            std::cout << player;
         }
         if(enemy->isDead()){
             player.addExp(enemy->getExpWorth());

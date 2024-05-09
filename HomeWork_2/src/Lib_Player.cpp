@@ -4,7 +4,7 @@
 #include <algorithm>
 namespace LibGame{
 
-    Player::Player():Being("player",100,1,5){
+    Player::Player():Being("player",100,4,5){
         loadInitialBooks();
     }
     void Player::attackLogic(Being* being){
@@ -47,23 +47,37 @@ namespace LibGame{
     void Player::castSpell(unsigned i,Being* target){
         if(spellsLearned.size() <= i)
             throw std::range_error("Casting non-existant spell!");
-        spellsLearned[i]->use(this,target);
+        spellsLearned[i]->cast(this,target);
     }
     void Player::chooseSpell(Being* being,std::istream& in, std::ostream& out){
         printSpells(out);
-        unsigned i = static_cast<unsigned>(Utility::readInt(in,out) - 1);
+        unsigned i = static_cast<unsigned>(Utility::readInt(in,out));
+        if(i == 0)
+            throw std::logic_error("");
+        i--;
         if(i >= spellsLearned.size()){
             Utility::cls();
             out << "Not a valid command! Try again:\n";
             return chooseSpell(being,in,out);
         }
         out << "Chose " << spellsLearned[i]->getName() << "!\n";
+
         castSpell(i,being);
+
     }
     void Player::printSpells(std::ostream& out){
+
+        std::cout << "MANA: " << mana << "\n";
+        std::cout << "0 to cancel\n";
+
         for(unsigned i = 0; i < spellsLearned.size(); ++i){
-            out << i + 1 << ' ' << spellsLearned[i]->getName() << ' ' << spellsLearned[i]->getManaCost() << '\n';
+            out << i + 1 << ' ' << spellsLearned[i]->getName() << " for "<< spellsLearned[i]->getVal(lvl);
+            out <<  "  ; Cost: " << spellsLearned[i]->getManaCost() << '\n';
         }
+    }
+    void Player::focus(){
+        std::cout << getName() << " is focusing!";
+        addMana(lvl);
     }
 
     Player::~Player(){}

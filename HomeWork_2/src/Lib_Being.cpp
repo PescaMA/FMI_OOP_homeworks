@@ -34,9 +34,19 @@ namespace LibGame{
         out << xp << "/" << getLevelUpExp();
     }
 
+    void Being::scaleLvl(){
+        hp.scaleMaxVal(lvl,10);
+        mana.scaleMaxVal(lvl,50);
+    }
     void Being::levelUp(){
+        std:: cout << "\n" <<  getName() << " leveled up!\n";
         Exp::levelUp();
         scaleLvl();
+    }
+    void Being::addExp(int val){
+        std:: cout << "\n" <<  getName() << " gained " << val << " exp!\n";
+        Exp::addExp(val);
+
     }
     Being::Being(std::string name,int maximumHp,int maximumMana, int physicalDamage,double damageChance):
         Hp(maximumHp),
@@ -72,8 +82,6 @@ namespace LibGame{
             return false;
         }
         attackLogic(being);
-        if(!being->isDead())
-            std::cout << "\n" << *being;
         return true;
     }
     void Being::attackLogic(Being* being){
@@ -88,6 +96,7 @@ namespace LibGame{
         out << " ) HP:" <<being.hp;
         out << " ; Mana:" <<being.mana;
         out << " ; XP: "; being.printExp();
+        out << " ; Dmg: " << being.getDamage();
         out << "\n";
         return out;
     }

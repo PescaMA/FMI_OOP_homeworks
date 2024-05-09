@@ -15,6 +15,7 @@ namespace LibGame{
             return;
         lvl = Utility::randInt(minLvl,playerLvl);
         scaleLvl();
+        hp.setVal(hp.getMaxVal());
     }
     int Enemy::getExpWorth()const{
         return getLvl();

@@ -44,7 +44,7 @@ namespace LibGame{
         int getLevelUpExp();
         int getLvl()const{return lvl;}
         virtual void setLvl(int);
-        void addExp(int);
+        virtual void addExp(int);
     };
     class Being : public Hp, public Mana, public Exp{
     protected:
@@ -56,10 +56,7 @@ namespace LibGame{
     public:
         void reset();
         int getDamage() const;
-        void scaleLvl(){
-            hp.scaleMaxVal(lvl);
-            mana.scaleMaxVal(lvl);
-        }
+        void scaleLvl();
 
         const std::string& getName() const{return name;}
         double getHitChance(){return hitChance;}
@@ -67,6 +64,7 @@ namespace LibGame{
         bool attack(Being*);
         virtual void attackLogic(Being*);
         virtual void levelUp() override;
+        virtual void addExp(int) override;
 
         Being(void):Hp(0),Mana(0){}
         Being(std::string,int,int,int);

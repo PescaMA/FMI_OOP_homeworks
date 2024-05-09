@@ -9,6 +9,7 @@ namespace Utility{
     void cls(void);
     int randInt(int,int);
     bool randProb(double);
+    int scaleBase(int,int,int);
     int scale20(int,int);
 
     template<class T>
@@ -26,7 +27,7 @@ namespace Utility{
         limitedStat(T maxVal):maxVal(maxVal),baseMaxVal(maxVal),val(maxVal){}
         T getVal()const{return val;}
         T getMaxVal() const {return maxVal;}
-        void scaleMaxVal(int scale){maxVal = scale20(baseMaxVal,scale);}
+        void scaleMaxVal(int value,int scale = 20){maxVal = scaleBase(baseMaxVal,value,scale);}
         void setVal(T newVal){update(newVal);}
         void setMax(T newVal){
             maxVal = newVal;

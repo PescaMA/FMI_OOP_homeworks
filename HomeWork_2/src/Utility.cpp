@@ -16,6 +16,11 @@ namespace Utility{
             return readInt(in,out);
         }
     }
+    int scaleBase(int dmg,int lvl, int percent = 20){
+
+        double scale = percent / 100.0;
+        return static_cast<int>(dmg * (1 - scale + scale * lvl));
+    }
     int scale20(int dmg, int lvl){
         return static_cast<int>(dmg * (.8 + .2 * lvl));
     }
