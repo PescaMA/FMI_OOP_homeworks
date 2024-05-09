@@ -19,57 +19,48 @@ namespace LibGame{
                 return manaEfficiency * baseVal;
             }
             int getMinLvl() const {return minLvl;}
-            int getBaseVal(int lvl = 1) const{
-                int modifier = static_cast<int>(lvl) * .4;
-                return baseVal * std::min(modifier, 1);
+            int getVal(int lvl = 1) const{
+                return Utility::scale20(baseVal,lvl);
             }
 
-            void virtual use(Being*) const = 0;
-            void virtual useOnSelf(Being*) const = 0;
+            void virtual use(Being*,Being*) const = 0;
             friend std::ostream& operator<<(std::ostream&, const Book&);
     };
 
     class ExpBook : public Book{
         public:
         ExpBook();
-        void use(Being* being) const override;
-        void useOnSelf(Being* being) const override;
+        void use(Being*,Being*) const override;
     };
     class HealBook : public Book{
         public:
         HealBook();
-        void use(Being* being) const override;
-        void useOnSelf(Being* being) const override;
+        void use(Being*,Being*) const override;
     };
     class HealManaBook : public Book{
         public:
         HealManaBook();
-        void use(Being* being) const override;
-        void useOnSelf(Being* being) const override;
+        void use(Being*,Being*) const override;
     };
     class FireBook : public Book{
         public:
         FireBook();
-        void use(Being* being) const override;
-        void useOnSelf(Being* being) const override;
+        void use(Being*,Being*) const override;
     };
     class DrainManaBook : public Book{
         public:
         DrainManaBook();
-        void use(Being* being) const override;
-        void useOnSelf(Being* being) const override;
+        void use(Being*,Being*) const override;
     };
     class VampirismBook : public Book{
         public:
         VampirismBook();
-        void use(Being* being) const override;
-        void useOnSelf(Being* being) const override;
+        void use(Being*,Being*) const override;
     };
     class WindBook : public Book{
         public:
         WindBook();
-        void use(Being* being) const override;
-        void useOnSelf(Being* being) const override;
+        void use(Being*,Being*) const override;
     };
 
 }

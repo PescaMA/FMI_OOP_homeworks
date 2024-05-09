@@ -19,7 +19,11 @@ namespace LibGame{
         bool learnNewBook();
         void learnNewBooks();
     public:
+        void levelUp() override;
         void attackLogic (Being*) override;
+        void chooseSpell(Being*,std::istream& in = std::cin, std::ostream& = std::cout);
+        void printSpells(std::ostream& = std::cout);
+        void castSpell(unsigned,Being*);
         Player();
         ~Player();
     };

@@ -58,7 +58,7 @@ void Game::makeEnemyAttack(Enemy* enemy){
 }
 
 void Game::playerAction(Enemy* enemy){
-    std::cout << "\nPress 0 to pass \nPress 1 to attack:";
+    std::cout << "\nPress 0 to pass \nPress 1 to attack\nPress 2 to choose spell:";
     int action = Utility::readInt();
 
     Utility::cls();
@@ -66,6 +66,7 @@ void Game::playerAction(Enemy* enemy){
     switch(action){
         case 0: {std::cout << "\nPlayer passed!\n" << *enemy; break;}
         case 1: {player.attack(enemy); break;}
+        case 2: {player.chooseSpell(enemy);break;}
         default: {std::cout << "\nnot a valid command! Try again:";playerAction(enemy);}
     }
 }
