@@ -105,10 +105,6 @@ void Game::run(){
     else
         std::cout << "You WIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!.\n";
 }
-void Game::runTurn(){
-
-}
-
 
 
 Game::~Game(){

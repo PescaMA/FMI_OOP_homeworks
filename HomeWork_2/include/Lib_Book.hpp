@@ -5,9 +5,12 @@
 
 namespace LibGame{
     class NotEnoughMana : public std::exception {
+        std::string message;
         public:
+        NotEnoughMana(std::string msg = "Not enough mana!\n"):
+            message(msg){}
         const char * what () {
-            return "Not enough mana! ";
+            return message.c_str();
         }
     };
 

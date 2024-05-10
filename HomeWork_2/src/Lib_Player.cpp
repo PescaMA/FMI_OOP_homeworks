@@ -55,7 +55,7 @@ namespace LibGame{
         printSpells(out);
         unsigned i = static_cast<unsigned>(Utility::readInt(in,out));
         if(i == 0)
-            throw std::logic_error("");
+            throw NotEnoughMana("");
         i--;
         if(i >= spellsLearned.size()){
             Utility::cls();
