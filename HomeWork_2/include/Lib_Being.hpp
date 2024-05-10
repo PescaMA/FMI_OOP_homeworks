@@ -4,12 +4,7 @@
 #include "Utility.hpp"
 
 namespace LibGame{
-    class attackMiss : public std::exception {
-        public:
-        const char * what () {
-            return "Attack missed. ";
-        }
-    };
+
 
     class Hp{
     protected:
@@ -54,7 +49,7 @@ namespace LibGame{
 
         void die() override;
     public:
-        void reset();
+        virtual void reset();
         int getDamage() const;
         void scaleLvl();
 

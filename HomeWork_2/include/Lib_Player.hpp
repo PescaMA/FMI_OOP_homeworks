@@ -14,8 +14,8 @@ namespace LibGame{
 
     class Player : virtual public Being{
     protected:
-        std::vector<std::unique_ptr<Book>> spellsLearned;
-        std::vector<std::unique_ptr<Book>> spellsNotLearned;
+        std::vector<std::unique_ptr<Book>> spellsLearned; /// polymorphism
+        std::vector<std::unique_ptr<Book>> spellsNotLearned; /// polymorphism
         void loadInitialBooks();
         bool learnNewBook();
         void learnNewBooks();

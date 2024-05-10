@@ -5,7 +5,7 @@ namespace LibGame{
     Book::~Book(){}
     void Book::cast(Being *caster, Being* target, std::ostream& out){
             if(caster->getMana() < getManaCost())
-                throw std::logic_error("Not enough mana!");
+                throw NotEnoughMana();
             caster->drainMana(getManaCost());
             use(caster,target,out);
         }

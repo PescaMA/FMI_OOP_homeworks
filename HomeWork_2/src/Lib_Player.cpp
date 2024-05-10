@@ -14,6 +14,7 @@ namespace LibGame{
         spellsLearned.clear();
         spellsNotLearned.clear();
 
+        /// upcasting:
         spellsNotLearned.emplace_back(new ExpBook);
         spellsNotLearned.emplace_back(new HealBook);
         spellsNotLearned.emplace_back(new HealManaBook);
@@ -34,6 +35,7 @@ namespace LibGame{
             return false;
 
         spellsLearned.push_back(std::move(spellsNotLearned.back()));
+        std::cout << name << " learned new book: " << spellsLearned.back()->getName() << '\n';
         spellsNotLearned.pop_back();
         return true;
     }
@@ -60,7 +62,7 @@ namespace LibGame{
             out << "Not a valid command! Try again:\n";
             return chooseSpell(being,in,out);
         }
-        out << name << "Chose " << spellsLearned[i]->getName() << "!\n";
+        out << name << " chose " << spellsLearned[i]->getName() << "!\n";
 
         castSpell(i,being);
 

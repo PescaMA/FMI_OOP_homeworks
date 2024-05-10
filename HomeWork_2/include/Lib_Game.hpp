@@ -10,20 +10,20 @@
 namespace LibGame{
     class Game{
     protected:
-        Player player;
-        std::vector<std::unique_ptr<Enemy> > fightableEnemies;
-        std::vector<std::unique_ptr<Enemy> > nonFightableEnemies;
+        const std::string BEGIN_MESSAGE = "A new journey begins.\n";
+        static Player player;
+        static std::vector<std::unique_ptr<Enemy> > fightableEnemies; /// polymorphism
+        static std::vector<std::unique_ptr<Enemy> > nonFightableEnemies; /// polymorphism
 
-        void loadAllEnemies();
-        void addNewEnemies();
-        bool addNewEnemy();
-        Enemy* getRandomEnemy();
-        void makeEnemyAttack(Enemy*);
-        void displayAttack(Being*,int);
-        void playerAction(Enemy*);
+        static void loadAllEnemies();
+        static void addNewEnemies();
+        static bool addNewEnemy();
+        static Enemy* getRandomEnemy();
+        static void makeEnemyAttack(Enemy*);
+        static void playerAction(Enemy*);
     public:
         Game();
-        void run();
+        static void run();
         virtual ~Game();
     };
 }

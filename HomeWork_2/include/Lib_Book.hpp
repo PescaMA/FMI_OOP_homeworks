@@ -4,6 +4,13 @@
 #include "Lib_Being.hpp"
 
 namespace LibGame{
+    class NotEnoughMana : public std::exception {
+        public:
+        const char * what () {
+            return "Not enough mana! ";
+        }
+    };
+
     class Book
     {
     protected:

@@ -10,6 +10,10 @@ namespace LibGame{
         }*/
     Enemy::Enemy(int minLevel): minLvl(minLevel){}
 
+    void Enemy::reset(){
+        Being::reset();
+        addMana(mana.getMaxVal());
+    }
     void Enemy::randomizeLvl(int playerLvl){
         if(playerLvl < minLvl)
             return;
@@ -105,7 +109,7 @@ namespace LibGame{
         }
     }
 
-    ActualLibrarian::ActualLibrarian(void):Being("real librarian",100,20,8),Enemy(11){
+    ActualLibrarian::ActualLibrarian(void):Being("real librarian",100,20,8),Enemy(7){
         mana.scaleMaxVal(lvl);
         addMana(mana.getMaxVal());
     }
@@ -113,7 +117,7 @@ namespace LibGame{
         unsigned randomI = Utility::randInt(1,spellsLearned.size()) - 1;
         try{
             castSpell(randomI,being);
-        }catch(std::logic_error){
+        }catch(NotEnoughMana){
             Player::attackLogic(being);
         }
     }

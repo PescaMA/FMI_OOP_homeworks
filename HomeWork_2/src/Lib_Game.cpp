@@ -6,11 +6,19 @@
 
 namespace LibGame{
 
+Player Game::player;
+std::vector<std::unique_ptr<Enemy> > Game::fightableEnemies; /// polymorphism
+std::vector<std::unique_ptr<Enemy> > Game::nonFightableEnemies;/// polymorphism
+Game::Game(){
+    loadAllEnemies();
+    std::cout << BEGIN_MESSAGE;
+}
 void Game::loadAllEnemies(){
 
     if(!fightableEnemies.empty() || !nonFightableEnemies.empty())
         return; /// load only once for all games.
 
+    /// upcasting :
     nonFightableEnemies.emplace_back(new Worm);
     nonFightableEnemies.emplace_back(new BookWorm);
     nonFightableEnemies.emplace_back(new Mouse);
@@ -36,10 +44,6 @@ bool Game::addNewEnemy(){
 }
 void Game::addNewEnemies(){
     while(addNewEnemy());
-}
-Game::Game(){
-    loadAllEnemies();
-    std::cout << "A new journey begins.\n";
 }
 
 Enemy* Game::getRandomEnemy(){
@@ -72,7 +76,7 @@ void Game::playerAction(Enemy* enemy){
         case 1: {player.attack(enemy); break;}
         case 2: {player.chooseSpell(enemy);break;}
         default: {std::cout << "\nnot a valid command! Try again:";playerAction(enemy);}
-    }} catch(std::logic_error noMana){
+    }} catch(NotEnoughMana noMana){
             std::cout << noMana.what() << "\n\nTry again:\n";
             return playerAction(enemy);
         }
@@ -97,9 +101,12 @@ void Game::run(){
 
     }
     if(player.isDead())
-        std::cout << "Game over! You were defeated by " << enemy->getName();
+        std::cout << "Game over! You were defeated by " << enemy->getName() << "\n";
     else
         std::cout << "You WIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!.\n";
+}
+void Game::runTurn(){
+
 }
 
 

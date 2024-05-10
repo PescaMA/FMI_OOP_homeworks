@@ -12,6 +12,7 @@ class Enemy :virtual public Being
 
     public:
         Enemy(int);
+        void reset() override;
         void randomizeLvl(int);
         int getExpWorth()const;
         int getMinLvl(){return minLvl;}
