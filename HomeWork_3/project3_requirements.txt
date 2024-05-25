@@ -8,8 +8,9 @@ Design patterns
 	0. 1 default point.
 	1. Implement 3 different object-oriented design patterns (up to one point for each design pattern implemented and used correctly). (3p)
 	• Note: the pattern must be found in the code you wrote. For example, if you used an already existing iterator class from the standard library, it does not mean that you have implemented the iterator design pattern.
-	• Useful references: design patterns with code examples and when to use, catalog of common design patterns.
-Generic programming at: https://refactoring.guru/design-patterns/catalog.
+	• Useful references: design patterns with code examples and when to use, catalog of common design patterns at: https://refactoring.guru/design-patterns/catalog.
+
+Generic programming 
 
 	2. Use at least one template class defined by you. Must be parameterized by at least one generic data type (at least one typename), to be usefully used within the class (e.g. to define a attribute, a method, etc.). (1p)
 

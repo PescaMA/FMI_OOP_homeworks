@@ -5,10 +5,7 @@
 #include <algorithm>
 
 namespace LibGame{
-
-Player Game::player;
-std::vector<std::unique_ptr<Enemy> > Game::fightableEnemies; /// polymorphism
-std::vector<std::unique_ptr<Enemy> > Game::nonFightableEnemies;/// polymorphism
+Game* Game::instance = NULL;
 Game::Game(){
     loadAllEnemies();
     std::cout << BEGIN_MESSAGE;
@@ -49,6 +46,8 @@ void Game::addNewEnemies(){
 Enemy* Game::getRandomEnemy(){
     if(fightableEnemies.empty())
         throw std::logic_error("no enemies are low level enough!");
+
+
     int i = Utility::randInt(0,fightableEnemies.size()-1);
 
     fightableEnemies[i]->randomizeLvl(player.getLvl());
@@ -82,6 +81,9 @@ void Game::playerAction(Enemy* enemy){
         }
 }
 void Game::run(){
+
+
+
     Enemy* enemy = getRandomEnemy();
     while(!player.isDead()){
         enemy = getRandomEnemy();
@@ -106,9 +108,14 @@ void Game::run(){
         std::cout << "You WIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!.\n";
 }
 
+Game* Game::getInstance(){
+    if(!instance)
+        instance = new Game;
+    return instance;
+}
 
 Game::~Game(){
-
     std::cout << "Game finished.\n";
 }
+
 }

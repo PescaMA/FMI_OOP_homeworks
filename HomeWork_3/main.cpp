@@ -3,7 +3,7 @@
 #include "Lib_Game.hpp"
 
 int main(){
-    LibGame::Game test;
+    LibGame::Game* test(LibGame::Game::getInstance());
 
-    test.run();
+    test->run();
 }

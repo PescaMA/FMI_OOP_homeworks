@@ -8,23 +8,26 @@
 
 
 namespace LibGame{
-    class Game{
+    class Game{ /// SINGLETON!
+    private:
+        Game();
+        ~Game();
+        static Game* instance;
     protected:
         const std::string BEGIN_MESSAGE = "A new journey begins.\n";
-        static Player player;
-        static std::vector<std::unique_ptr<Enemy> > fightableEnemies; /// polymorphism
-        static std::vector<std::unique_ptr<Enemy> > nonFightableEnemies; /// polymorphism
+        Player player;
+        std::vector<std::unique_ptr<Enemy> > fightableEnemies; /// polymorphism
+        std::vector<std::unique_ptr<Enemy> > nonFightableEnemies; /// polymorphism
 
-        static void loadAllEnemies();
-        static void addNewEnemies();
-        static bool addNewEnemy();
-        static Enemy* getRandomEnemy();
-        static void makeEnemyAttack(Enemy*);
-        static void playerAction(Enemy*);
+        void loadAllEnemies();
+        void addNewEnemies();
+        bool addNewEnemy();
+        Enemy* getRandomEnemy();
+        void makeEnemyAttack(Enemy*);
+        void playerAction(Enemy*);
     public:
-        Game();
-        static void run();
-        virtual ~Game();
+        static Game* getInstance();
+        void run();
     };
 }
 
