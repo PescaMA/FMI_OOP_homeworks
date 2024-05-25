@@ -52,6 +52,10 @@ namespace LibGame{
         spellsLearned[i]->cast(this,target);
     }
     void Player::chooseSpell(Being* being,std::istream& in, std::ostream& out){
+        if(std::all_of(spellsLearned.begin(),spellsLearned.end(),
+                   [this](std::unique_ptr<Book> &book){return book->getManaCost() > getMana();}))
+            out << "You cannot cast any spells (but can look at them)!\n";
+
         printSpells(out);
         unsigned i = static_cast<unsigned>(Utility::readInt(in,out));
         if(i == 0)

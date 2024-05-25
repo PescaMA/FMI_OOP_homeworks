@@ -16,13 +16,13 @@ namespace LibGame{
     protected:
         const std::string BEGIN_MESSAGE = "A new journey begins.\n";
         Player player;
-        std::vector<std::unique_ptr<Enemy> > fightableEnemies; /// polymorphism
-        std::vector<std::unique_ptr<Enemy> > nonFightableEnemies; /// polymorphism
+        std::vector<std::shared_ptr<Enemy> > fightableEnemies; /// polymorphism
+        std::vector<std::shared_ptr<Enemy> > nonFightableEnemies; /// polymorphism
 
         void loadAllEnemies();
         void addNewEnemies();
         bool addNewEnemy();
-        Enemy* getRandomEnemy();
+        std::shared_ptr<Enemy> getRandomEnemy();
         void makeEnemyAttack(Enemy*);
         void playerAction(Enemy*);
     public:

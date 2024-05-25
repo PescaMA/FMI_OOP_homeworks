@@ -26,10 +26,10 @@ The theme of library taken in a gaming direction. A short game about trying to e
 
  - 3 design patterns: Singleton(Game class),
  - 1 template class: in Utility, the class LimitedStat.
- - 1 template function: 
+ - 1 template function: in Utility, the getRandomElement function (vector<T>).
  - 2 STL containers: std::vector (Game has a vector of Enemy),
- - 2 STL algorithmic methods: sort (in Game, Enemies are sorted on their minimum player level),
- - 2 smart pointers: unique_ptr (in Game to remember the enemies for upcasting),
+ - 2 STL algorithmic methods: sort (in Game, Enemies are sorted on their minimum player level), std::all_of (in Player::chooseSpell to check if you can cast any spell).
+ - 2 smart pointers: shared_ptr (in Game to remember the enemies for upcasting), unique_ptr (in Player for books).
  - Default 1 point.
 
  Bonus:

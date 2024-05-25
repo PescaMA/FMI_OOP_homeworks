@@ -6,8 +6,15 @@
 
 namespace Utility{
     int readInt(std::istream& = std::cin,std::ostream& out = std::cout);
+
+
     void cls(void);
     int randInt(int,int);
+    template<class T>
+    T& getRandomElement(std::vector<T>& v){
+        int i = randInt(0,v.size()-1);
+        return v[i];
+    }
     bool randProb(double);
     int scaleBase(int,int,int);
     int scale20(int,int);

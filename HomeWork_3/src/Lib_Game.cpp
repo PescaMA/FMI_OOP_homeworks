@@ -26,7 +26,7 @@ void Game::loadAllEnemies(){
     nonFightableEnemies.emplace_back(new ActualLibrarian);
 
     std::sort(nonFightableEnemies.begin(),nonFightableEnemies.end(),
-                  [](std::unique_ptr<Enemy>& ptr1,std::unique_ptr<Enemy>& ptr2){
+                  [](std::shared_ptr<Enemy>& ptr1,std::shared_ptr<Enemy>& ptr2){
                   return ptr1->getMinLvl() > ptr2->getMinLvl();});
 
     addNewEnemies();
@@ -43,16 +43,16 @@ void Game::addNewEnemies(){
     while(addNewEnemy());
 }
 
-Enemy* Game::getRandomEnemy(){
+std::shared_ptr<Enemy> Game::getRandomEnemy(){
     if(fightableEnemies.empty())
         throw std::logic_error("no enemies are low level enough!");
 
 
-    int i = Utility::randInt(0,fightableEnemies.size()-1);
+    std::shared_ptr<Enemy> chosenEnemy = Utility::getRandomElement(fightableEnemies);
 
-    fightableEnemies[i]->randomizeLvl(player.getLvl());
+    chosenEnemy->randomizeLvl(player.getLvl());
 
-    return fightableEnemies[i].get();
+    return chosenEnemy;
 }
 void Game::makeEnemyAttack(Enemy* enemy){
     if(enemy->isDead())
@@ -84,20 +84,20 @@ void Game::run(){
 
 
 
-    Enemy* enemy = getRandomEnemy();
+    std::shared_ptr<Enemy> enemy = getRandomEnemy();
     while(!player.isDead()){
         enemy = getRandomEnemy();
         std::cout << "Now fighting: " << *enemy;
         while(!enemy->isDead() && !player.isDead()){
-            playerAction(enemy);
-            makeEnemyAttack(enemy);
+            playerAction(enemy.get());
+            makeEnemyAttack(enemy.get());
         }
         if(enemy->isDead()){
             player.addExp(enemy->getExpWorth());
             enemy->reset();
             addNewEnemies();
 
-            if(dynamic_cast<ActualLibrarian*>(enemy))
+            if(dynamic_cast<ActualLibrarian*>(enemy.get()))
                 break;
         }
 
