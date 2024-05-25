@@ -1,0 +1,35 @@
+Stage 3 requirements
+
+	To meet these requirements, you can reuse/extend the code from step 1 or 2, updating your project to include all new concepts. Alternatively, you can change your theme (but you'll have to let me know).
+	Your project must still comply with the General Criteria from the first part (clean, encapsulation-compliant code, no global variables, no classes/methods that are not used/called anywhere), as well as the pointers to Code versioning (keep uploading what you're working on to Git) and Documentation (update the README accordingly).
+
+Design patterns
+
+	0. 1 default point.
+	1. Implement 3 different object-oriented design patterns (up to one point for each design pattern implemented and used correctly). (3p)
+	• Note: the pattern must be found in the code you wrote. For example, if you used an already existing iterator class from the standard library, it does not mean that you have implemented the iterator design pattern.
+	• Useful references: design patterns with code examples and when to use, catalog of common design patterns.
+Generic programming at: https://refactoring.guru/design-patterns/catalog.
+
+	2. Use at least one template class defined by you. Must be parameterized by at least one generic data type (at least one typename), to be usefully used within the class (e.g. to define a attribute, a method, etc.). (1p)
+
+	3. Define and call at least one template function (can be free function or method of a class that is not necessarily generic). Must be parameterized by at least one generic data type (at least one typename) to be used in the function definition (e.g. parameter, returned data type). (1p)
+
+The standard library
+	4. Use at least two different container data types from the STL in your classes defined by you. (1p)
+	• Examples: vector, array, list, set, map, etc.
+
+	5. Use at least two utility functions from the standard library (free functions, not methods of STL classes). (1p)
+	• Examples: sort, find, search, all_of/any_of/none_of, accumulate, fill, generate, copy, reverse, any other functions in the header file from standard library <algorithm>.
+	
+	6. Properly use two different types of smart pointers from standard library (a point is awarded if you correctly used a type of smart pointers, 2 points if you used two different types). (2p)
+	• By smart pointer we mean one of the classes: std::reference_wrapper, std::unique_ptr, std::shared_ptr or std::weak_ptr.
+	• You can use these classes instead of regular references or pointers from your code.
+Useful references: advantages of smart pointers, using smart pointers in C++ (https://learn.microsoft.com/en-us/cpp/cpp/smart-pointers-modern-cpp?view=msvc-170).
+
+
+	Bonus
+	1. Use an external library (other than the standard library) in your project.
+	• It can provide any kind of functionality that suits your theme's needs: GUI, animations, audio, importing/exporting data in various formats, connecting to a database, network connections, interacting with hardware , specialized algorithms etc.
+	• You may receive up to 2 bonus points for this requirement, depending on the complexity of your chosen library and how well it integrates with your project.
+	• To receive the full score, you must include the library in your project in a portable way, properly configuring the build system used (CodeBlocks Project, Visual Studio Project, CMake, Makefile, etc.), not copying files in your project/repository.
