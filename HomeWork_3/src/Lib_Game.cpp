@@ -2,6 +2,7 @@
 #include "Utility.hpp"
 
 #include <iostream>
+#include <set>
 #include <algorithm>
 
 namespace LibGame{
@@ -85,6 +86,9 @@ void Game::run(){
 
 
     std::shared_ptr<Enemy> enemy = getRandomEnemy();
+
+    std::set<std::pair<int,std::string> > defeteadEnemies;
+
     while(!player.isDead()){
         enemy = getRandomEnemy();
         std::cout << "Now fighting: " << *enemy;
@@ -95,6 +99,7 @@ void Game::run(){
         if(enemy->isDead()){
             player.addExp(enemy->getExpWorth());
             enemy->reset();
+            defeteadEnemies.insert({enemy->getLvl(),enemy->getName()});
             addNewEnemies();
 
             if(dynamic_cast<ActualLibrarian*>(enemy.get()))
@@ -106,6 +111,11 @@ void Game::run(){
         std::cout << "Game over! You were defeated by " << enemy->getName() << "\n";
     else
         std::cout << "You WIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!.\n";
+
+    std::cout << "\nOn the journey you have defeated:\n";
+    for(auto info : defeteadEnemies){
+        std::cout << info.second << " (level " << info.first << ")\n";
+    }
 }
 
 Game* Game::getInstance(){
